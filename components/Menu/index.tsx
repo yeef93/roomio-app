@@ -13,9 +13,10 @@ function Menu() {
   ) as JwtPayload | null;
 
   const menuItems = [
-    { name: "Events", path: "/events" },    
+    { name: "Help Center", path: "/help" },    
+    { name: "Terms & Conditions", path: "/terms" },    
     // { name: "Create Event", path: `/organizer/${decodedToken?.scope.sub}/events` },
-    { name: "FAQ", path: "/faq" },
+    { name: "Become Tenant", path: "/registertenant" },
   ];
 
   return (

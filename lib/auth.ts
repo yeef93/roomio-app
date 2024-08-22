@@ -1,5 +1,14 @@
 import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import GoogleProvider from "next-auth/providers/google";
+import FacebookProvider from "next-auth/providers/facebook";
+
+const ensureString = (value: string | undefined) => {
+  if (!value) {
+    throw new Error("Required environment variable is missing");
+  }
+  return value;
+};
 
 export const authOptions: NextAuthOptions = {
   session: {
@@ -15,6 +24,10 @@ export const authOptions: NextAuthOptions = {
       async authorize(credentials) {
         try {
           const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+          if (!apiUrl) {
+            throw new Error("API base URL is not defined");
+          }
+
           const res = await fetch(`${apiUrl}/auth/login`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -28,10 +41,7 @@ export const authOptions: NextAuthOptions = {
             const user = await res.json();
             return {
               ...user,
-              token: user.token,
               email: credentials?.email,
-              scope: user.scope,
-              sub: user.sub,
             };
           } else {
             throw new Error("Invalid credentials");
@@ -41,6 +51,14 @@ export const authOptions: NextAuthOptions = {
           throw new Error("Authentication failed");
         }
       },
+    }),
+    GoogleProvider({
+      clientId: ensureString(process.env.GOOGLE_CLIENT_ID),
+      clientSecret: ensureString(process.env.GOOGLE_CLIENT_SECRET),
+    }),
+    FacebookProvider({
+      clientId: ensureString(process.env.FACEBOOK_CLIENT_ID),
+      clientSecret: ensureString(process.env.FACEBOOK_CLIENT_SECRET),
     }),
   ],
   callbacks: {
@@ -65,5 +83,5 @@ export const authOptions: NextAuthOptions = {
       return session;
     },
   },
-  secret: process.env.NEXTAUTH_SECRET,
+  secret: ensureString(process.env.NEXTAUTH_SECRET),
 };
