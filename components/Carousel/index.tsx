@@ -7,7 +7,7 @@ interface CarouselProps {
   images: string[];
 }
 
-function Carousel ({ images }:CarouselProps) {
+function Carousel ({ images }: CarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const nextSlide = () => {
@@ -71,8 +71,10 @@ function Carousel ({ images }:CarouselProps) {
           />
         ))}
       </div>
-      <div className=' absolute bottom-1/3 left-1/2 transform -translate-x-1/2 flex space-x-2'>
-        <SearchBar/>
+
+      {/* Positioned SearchBar */}
+      <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 w-full max-w-4xl px-4">
+        <SearchBar />
       </div>
     </div>
   );
