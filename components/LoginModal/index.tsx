@@ -7,7 +7,6 @@ import Image from "next/image";
 import * as Yup from "yup";
 import Modal from "../Modal";
 import { debounce } from "lodash";
-import { FaSpinner } from "react-icons/fa";
 import LoadingDots from "../LoadingDots";
 
 interface LoginModalProps {
