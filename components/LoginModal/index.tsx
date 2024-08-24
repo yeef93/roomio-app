@@ -1,11 +1,14 @@
 "use client";
 import { signIn, useSession } from "next-auth/react";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, ChangeEvent } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import * as Yup from "yup";
 import Modal from "../Modal";
+import { debounce } from "lodash";
+import { FaSpinner } from "react-icons/fa";
+import LoadingDots from "../LoadingDots";
 
 interface LoginModalProps {
   onClose: () => void;
@@ -13,17 +16,46 @@ interface LoginModalProps {
 }
 
 function LoginModal({ onClose, onSuccess }: LoginModalProps) {
+  const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL as string;
   const { data: session, status } = useSession();
   const router = useRouter();
+  const [loginError, setLoginError] = useState<string | null>(null);
+  const [emailStatus, setEmailStatus] = useState<{ method: string; exists: boolean } | null>(null);
+  const [isCheckingEmail, setIsCheckingEmail] = useState<boolean>(false);
 
   useEffect(() => {
     if (status === "authenticated") {
-      // Redirect to your desired page after successful login
-      router.push("/"); // Replace with your desired route
+      router.push("/"); // Redirect to your desired route
     }
   }, [status, router]);
 
-  const [loginError, setLoginError] = useState<string | null>(null);
+  const fetchCheckEmail = async (email: string) => {
+    setIsCheckingEmail(true);
+    try {
+      const response = await fetch(`${apiUrl}/auth/check-email`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      });
+      const data = await response.json();
+      if (data.success) {
+        setEmailStatus({ method: data.data.method, exists: data.data.exists });
+      } else {
+        setEmailStatus(null);
+      }
+    } catch (error) {
+      console.error("Error fetching check email:", error);
+      setEmailStatus(null);
+    } finally {
+      setIsCheckingEmail(false);
+    }
+  };
+
+  const handleEmailChange = debounce(async (email: string) => {
+    await fetchCheckEmail(email);
+  }, 500);
 
   const initialValues = {
     email: "",
@@ -34,12 +66,16 @@ function LoginModal({ onClose, onSuccess }: LoginModalProps) {
     email: Yup.string()
       .email("Invalid email address")
       .required("Email is required"),
-    password: Yup.string().required("Password is required"),
+    password: Yup.string().when("email", {
+      is: (val: string) => emailStatus && emailStatus.method === "email",
+      then: schema => schema.required("Password is required"),
+      otherwise: schema => schema.notRequired(),
+    }),
   });
 
   const handleSubmit = async (values: any, { setSubmitting }: any) => {
     setLoginError(null);
-    // console.log(values.email, values.password)
+
     try {
       const result = await signIn("credentials", {
         redirect: false,
@@ -52,7 +88,7 @@ function LoginModal({ onClose, onSuccess }: LoginModalProps) {
       } else {
         onSuccess();
         onClose();
-        router.push(`/`);
+        router.push("/");
       }
     } catch (error) {
       console.error("Sign-in error:", error);
@@ -64,22 +100,13 @@ function LoginModal({ onClose, onSuccess }: LoginModalProps) {
     setSubmitting(false);
   };
 
-  const handleSignIn = () => {
-    signIn('google', { callbackUrl: '/your-callback-url', redirect: false }).then((result) => {
-      if (result?.error) {
-        console.error(result.error);
-      }
-    });
-  };
-
-
   return (
     <Modal>
-      <div className="bg-white rounded-lg shadow-lg overflow-hidden relative z-50 max-w-md w-full">
-        <button
-          className="absolute top-0 right-0 m-4 text-gray-500 hover:text-gray-800 focus:outline-none"
-          onClick={onClose}
-        >
+    <div className="bg-white rounded-lg shadow-lg overflow-hidden relative z-50 max-w-md w-full">
+      <button
+        className="absolute top-0 right-0 m-4 text-gray-500 hover:text-gray-800 focus:outline-none"
+        onClick={onClose}
+      >
           <svg
             className="w-6 h-6"
             fill="none"
@@ -103,55 +130,94 @@ function LoginModal({ onClose, onSuccess }: LoginModalProps) {
             validationSchema={validationSchema}
             onSubmit={handleSubmit}
           >
-            {({ isSubmitting }) => (
+            {({ isSubmitting, handleChange }) => (
               <Form>
                 <div className="mb-4">
                   <label
-                    className="block text-gray-700 text-sm font-bold mb-2"
+                    className="block text-gray-700 text-sm font-bold mb-1"
                     htmlFor="email"
                   >
                     Email
                   </label>
-                  <Field
-                    type="email"
-                    name="email"
-                    id="email"
-                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    placeholder="Enter your email address"
-                  />
+                  <div className="relative">
+                    <Field
+                      type="email"
+                      name="email"
+                      id="email"
+                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                      placeholder="Enter your email address"
+                      onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                        handleChange(e);
+                        handleEmailChange(e.target.value);
+                      }}
+                    />
+                    {isCheckingEmail && (
+                      <div className="absolute right-3 top-2">
+                        <LoadingDots />
+                      </div>
+                    )}
+                  </div>
                   <ErrorMessage
                     name="email"
                     component="p"
                     className="text-red-500 text-xs italic"
                   />
                 </div>
-                <div className="mb-4">
-                  <label
-                    className="block text-gray-700 text-sm font-bold mb-2"
-                    htmlFor="password"
+
+                {emailStatus && emailStatus.exists && emailStatus.method === "email" && (
+                  <div className="mb-2">
+                    <label
+                      className="block text-gray-700 text-sm font-bold mb-1"
+                      htmlFor="password"
+                    >
+                      Password
+                    </label>
+                    <Field
+                      type="password"
+                      name="password"
+                      id="password"
+                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
+                      placeholder="Enter your password"
+                    />
+                    <ErrorMessage
+                      name="password"
+                      component="p"
+                      className="text-red-500 text-xs italic"
+                    />
+                  </div>
+                )}
+
+                {emailStatus && emailStatus.exists && emailStatus.method !== "email" && (
+                  <p className="text-red-500 text-xs italic mb-4">
+                    This email is registered with social login. Please use the respective method to sign in.
+                  </p>
+                )}
+
+                {emailStatus && !emailStatus.exists && (
+                  <button
+                    className="bg-orange-600 hover:bg-orange-500 w-full text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                    type="button"
+                    onClick={() => router.push("/register")}
                   >
-                    Password
-                  </label>
-                  <Field
-                    type="password"
-                    name="password"
-                    id="password"
-                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
-                    placeholder="Enter your password"
-                  />
-                  <ErrorMessage
-                    name="password"
-                    component="p"
-                    className="text-red-500 text-xs italic"
-                  />
-                </div>
-                <div>
-                  {loginError && (
-                    <p className="text-red-500 text-xs italic mb-4">
-                      {loginError}
-                    </p>
-                  )}
-                </div>
+                    Register
+                  </button>
+                )}
+
+                {emailStatus?.method === "email" && (
+                  <button
+                    className="bg-indigo-800 hover:bg-indigo-700 w-full text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                    type="submit"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? "Logging In..." : "Log In"}
+                  </button>
+                )}
+
+                {loginError && (
+                  <p className="text-red-500 text-xs italic mb-4">
+                    {loginError}
+                  </p>
+                )}
               </Form>
             )}
           </Formik>
@@ -162,7 +228,7 @@ function LoginModal({ onClose, onSuccess }: LoginModalProps) {
             <div className="border-t border-gray-300 flex-grow ml-3"></div>
           </div>
 
-          <div className=" flex flex-col gap-2">
+          <div className="flex flex-col gap-2">
             <button
               className="w-full py-2 flex items-center justify-center bg-white border border-blue-300 rounded-md text-blue-500 hover:bg-gray-100"
               onClick={() => signIn("google")}

@@ -16,7 +16,7 @@ function Menu() {
     { name: "Help Center", path: "/help" },    
     { name: "Terms & Conditions", path: "/terms" },    
     // { name: "Create Event", path: `/organizer/${decodedToken?.scope.sub}/events` },
-    { name: "Become Tenant", path: "/registertenant" },
+    { name: "List your property", path: "/tenant" },
   ];
 
   return (
@@ -29,8 +29,8 @@ function Menu() {
           <Link
             href={item.path}
             className={`block py-2 px-3 text-gray-900 hover:bg-gray-100 md:hover:bg-transparent
-              md:hover:text-purple-800 md:p-0 ${
-                pathname === item.path ? " border-b border-purple-600" : ""
+              md:hover:text-indigo-800 md:p-0 ${
+                pathname === item.path ? " border-b border-indigo-600" : ""
               }`}
           >
             {item.name}

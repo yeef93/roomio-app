@@ -201,7 +201,7 @@ function Footer() {
       </div>
       <div className="flex flex-col justify-between pt-5 pb-10 border-t sm:flex-row">
         <p className="text-sm text-gray-600">
-          © Copyright 2020 Lorem Inc. All rights reserved.
+          © Copyright 2024 Lorem Inc. All rights reserved.
         </p>
         <div className="flex items-center max-md:justify-center gap-5">
             <a href="javascript:;"

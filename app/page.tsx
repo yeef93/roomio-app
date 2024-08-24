@@ -1,4 +1,5 @@
 import Carousel from "@/components/Carousel";
+import Header from "@/components/Header";
 import SearchBar from "@/components/SearchBar";
 
 export default function Home() {
@@ -11,9 +12,12 @@ export default function Home() {
   ];
 
   return (
-    <div className=" pt-7">
-      <Carousel images={images} />
-      {/* <SearchBar /> */}
-    </div>
+    <>
+      <Header />
+      <div className=" pt-7">
+        <Carousel images={images} />
+        {/* <SearchBar /> */}
+      </div>
+    </>
   );
 }
