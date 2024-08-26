@@ -5,26 +5,33 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import * as Yup from "yup";
-import Modal from "../Modal";
+import Modal from "../../../../components/Modal";
 import { debounce } from "lodash";
-import LoadingDots from "../LoadingDots";
+import LoadingDots from "../../../../components/LoadingDots";
 
 interface LoginModalProps {
   onClose: () => void;
   onSuccess: () => void;
 }
 
-function LoginModal({ onClose, onSuccess }: LoginModalProps) {
+interface EmailStatus {
+  method: string;
+  exists: boolean;
+  verified: boolean;
+}
+
+const LoginModal: React.FC<LoginModalProps> = ({ onClose, onSuccess }) => {
   const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL as string;
   const { data: session, status } = useSession();
   const router = useRouter();
+
   const [loginError, setLoginError] = useState<string | null>(null);
-  const [emailStatus, setEmailStatus] = useState<{ method: string; exists: boolean } | null>(null);
+  const [emailStatus, setEmailStatus] = useState<EmailStatus | null>(null);
   const [isCheckingEmail, setIsCheckingEmail] = useState<boolean>(false);
 
   useEffect(() => {
     if (status === "authenticated") {
-      router.push("/"); // Redirect to your desired route
+      router.push("/"); // Redirect if already authenticated
     }
   }, [status, router]);
 
@@ -40,21 +47,68 @@ function LoginModal({ onClose, onSuccess }: LoginModalProps) {
       });
       const data = await response.json();
       if (data.success) {
-        setEmailStatus({ method: data.data.method, exists: data.data.exists });
+        setEmailStatus({
+          method: data.data.method,
+          exists: data.data.exists,
+          verified: data.data.verified,
+        });
       } else {
         setEmailStatus(null);
       }
     } catch (error) {
-      console.error("Error fetching check email:", error);
+      console.error("Error fetching email status:", error);
       setEmailStatus(null);
     } finally {
       setIsCheckingEmail(false);
     }
   };
 
-  const handleEmailChange = debounce(async (email: string) => {
-    await fetchCheckEmail(email);
-  }, 500);
+  const handleEmailChange = debounce((e: ChangeEvent<HTMLInputElement>) => {
+    setEmailStatus(null);
+    fetchCheckEmail(e.target.value);
+  }, 1500);
+
+  const resendVerification = async (email: string) => {
+    try {
+      const response = await fetch(`${apiUrl}/auth/resend-verification`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      });
+      const data = await response.json();
+      alert(
+        data.success
+          ? "Verification email resent. Please check your inbox."
+          : "Failed to resend verification email. Please try again later."
+      );
+    } catch (error) {
+      console.error("Error resending verification email:", error);
+      alert("An error occurred while resending the verification email.");
+    }
+  };
+
+  const registerEmail = async (email: string) => {
+    try {
+      const response = await fetch(`${apiUrl}/auth/register/user`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      });
+      const data = await response.json();
+      alert(
+        data.success
+          ? "Email successfully registered. Please check your inbox."
+          : "Failed to register email. Please try again later."
+      );
+    } catch (error) {
+      console.error("Error registering email:", error);
+      alert("An error occurred while registering the email.");
+    }
+  };
 
   const initialValues = {
     email: "",
@@ -67,27 +121,43 @@ function LoginModal({ onClose, onSuccess }: LoginModalProps) {
       .required("Email is required"),
     password: Yup.string().when("email", {
       is: (val: string) => emailStatus && emailStatus.method === "email",
-      then: schema => schema.required("Password is required"),
-      otherwise: schema => schema.notRequired(),
+      then: (schema) => schema.required("Password is required"),
+      otherwise: (schema) => schema.notRequired(),
     }),
   });
 
   const handleSubmit = async (values: any, { setSubmitting }: any) => {
     setLoginError(null);
-
     try {
-      const result = await signIn("credentials", {
-        redirect: false,
-        email: values.email,
-        password: values.password,
+      const response = await fetch(`${apiUrl}/auth/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: values.email,
+          password: values.password,
+        }),
       });
-
-      if (result?.error) {
-        throw new Error(result.error);
-      } else {
+  
+      const data = await response.json();
+  
+      if (response.ok && data.success) {
+        // Store the token securely
+        localStorage.setItem("token", data.data.token);
+  
+        // You can also update the session with this token if needed
+        await signIn("credentials", {
+          redirect: false,
+          email: values.email,
+          token: data.data.token, // Pass the token to the session
+        });
+  
         onSuccess();
         onClose();
-        router.push("/");
+        router.push(`/`);
+      } else {
+        throw new Error(data.statusMessage || "Login failed");
       }
     } catch (error) {
       console.error("Sign-in error:", error);
@@ -95,17 +165,17 @@ function LoginModal({ onClose, onSuccess }: LoginModalProps) {
         "Your email and password combination is incorrect. Please try again."
       );
     }
-
+  
     setSubmitting(false);
   };
 
   return (
     <Modal>
-    <div className="bg-white rounded-lg shadow-lg overflow-hidden relative z-50 max-w-md w-full">
-      <button
-        className="absolute top-0 right-0 m-4 text-gray-500 hover:text-gray-800 focus:outline-none"
-        onClick={onClose}
-      >
+      <div className="bg-white rounded-lg shadow-lg overflow-hidden relative z-50 max-w-md w-full">
+        <button
+          className="absolute top-0 right-0 m-4 text-gray-500 hover:text-gray-800 focus:outline-none"
+          onClick={onClose}
+        >
           <svg
             className="w-6 h-6"
             fill="none"
@@ -129,12 +199,12 @@ function LoginModal({ onClose, onSuccess }: LoginModalProps) {
             validationSchema={validationSchema}
             onSubmit={handleSubmit}
           >
-            {({ isSubmitting, handleChange }) => (
+            {({ isSubmitting, handleChange, values }) => (
               <Form>
                 <div className="mb-4">
                   <label
-                    className="block text-gray-700 text-sm font-bold mb-1"
                     htmlFor="email"
+                    className="block text-gray-700 text-sm font-bold mb-1"
                   >
                     Email
                   </label>
@@ -147,7 +217,7 @@ function LoginModal({ onClose, onSuccess }: LoginModalProps) {
                       placeholder="Enter your email address"
                       onChange={(e: ChangeEvent<HTMLInputElement>) => {
                         handleChange(e);
-                        handleEmailChange(e.target.value);
+                        handleEmailChange(e);
                       }}
                     />
                     {isCheckingEmail && (
@@ -163,11 +233,11 @@ function LoginModal({ onClose, onSuccess }: LoginModalProps) {
                   />
                 </div>
 
-                {emailStatus && emailStatus.exists && emailStatus.method === "email" && (
+                {emailStatus?.exists && emailStatus?.method === "email" && emailStatus.verified && (
                   <div className="mb-2">
                     <label
-                      className="block text-gray-700 text-sm font-bold mb-1"
                       htmlFor="password"
+                      className="block text-gray-700 text-sm font-bold mb-1"
                     >
                       Password
                     </label>
@@ -186,26 +256,37 @@ function LoginModal({ onClose, onSuccess }: LoginModalProps) {
                   </div>
                 )}
 
-                {emailStatus && emailStatus.exists && emailStatus.method !== "email" && (
+                {emailStatus?.exists && emailStatus?.method !== "email" && (
                   <p className="text-red-500 text-xs italic mb-4">
-                    This email is registered with social login. Please use the respective method to sign in.
+                    This email is registered with social login. Please use the
+                    respective method to log in.
                   </p>
                 )}
 
                 {emailStatus && !emailStatus.exists && (
                   <button
-                    className="bg-orange-600 hover:bg-orange-500 w-full text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
                     type="button"
-                    onClick={() => router.push("/register")}
+                    className="bg-orange-600 hover:bg-orange-500 w-full text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                    onClick={() => registerEmail(values.email)}
                   >
                     Register
                   </button>
                 )}
 
-                {emailStatus?.method === "email" && (
+                {emailStatus?.exists && !emailStatus.verified && (
                   <button
-                    className="bg-indigo-800 hover:bg-indigo-700 w-full text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                    type="button"
+                    className="bg-orange-600 hover:bg-orange-500 w-full text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-4"
+                    onClick={() => resendVerification(values.email)}
+                  >
+                    Resend Verification Email
+                  </button>
+                )}
+
+                {emailStatus?.method === "email" && emailStatus?.verified && (
+                  <button
                     type="submit"
+                    className="bg-indigo-800 hover:bg-indigo-700 w-full text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
                     disabled={isSubmitting}
                   >
                     {isSubmitting ? "Logging In..." : "Log In"}
@@ -229,49 +310,38 @@ function LoginModal({ onClose, onSuccess }: LoginModalProps) {
 
           <div className="flex flex-col gap-2">
             <button
+              type="button"
               className="w-full py-2 flex items-center justify-center bg-white border border-blue-300 rounded-md text-blue-500 hover:bg-gray-100"
               onClick={() => signIn("google")}
             >
               <Image
                 src="https://img.icons8.com/color/48/google-logo.png"
-                alt="Google icon"
-                className="w-5 h-5 mr-2"
-                width={40}
-                height={40}
+                alt="Google"
+                width={20}
+                height={20}
+                className="mr-2"
               />
               Continue with Google
             </button>
-
             <button
+              type="button"
               className="w-full py-2 flex items-center justify-center bg-white border border-blue-300 rounded-md text-blue-500 hover:bg-gray-100"
               onClick={() => signIn("facebook")}
             >
               <Image
                 src="https://img.icons8.com/color/48/facebook-new.png"
-                alt="Facebook icon"
-                className="w-6 h-6 mr-2"
-                width={40}
-                height={40}
+                alt="Facebook"
+                width={20}
+                height={20}
+                className="mr-2"
               />
               Continue with Facebook
             </button>
           </div>
-
-          <p className="text-xs text-center text-gray-500 mt-4">
-            By registering, you agree to our{" "}
-            <a href="#" className="text-blue-600 hover:underline">
-              Terms & Conditions
-            </a>{" "}
-            and that you have read our{" "}
-            <a href="#" className="text-blue-600 hover:underline">
-              Privacy Notice
-            </a>
-            .
-          </p>
         </div>
       </div>
     </Modal>
   );
-}
+};
 
 export default LoginModal;

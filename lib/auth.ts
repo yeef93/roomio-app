@@ -32,7 +32,7 @@ export const authOptions: NextAuthOptions = {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              usernameOrEmail: credentials?.email,
+              email: credentials?.email,
               password: credentials?.password,
             }),
           });

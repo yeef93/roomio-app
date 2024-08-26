@@ -3,7 +3,7 @@ import React, { useContext, useEffect, useState, useRef } from "react";
 import Image from "next/image";
 import Logo from "@/public/assets/logo.png";
 import MenuContext from "@/context/MenuContext";
-import LoginModal from "@/components/LoginModal";
+import LoginModal from "@/app/components/User/LoginModal";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import LogoutModal from "@/components/LogoutModal";

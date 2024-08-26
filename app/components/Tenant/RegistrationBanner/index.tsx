@@ -1,5 +1,5 @@
 "use client";
-import LoginModal from "@/components/LoginModal";
+import LoginModal from "@/app/components/User/LoginModal";
 import LogoutModal from "@/components/LogoutModal";
 import React, { useState } from "react";
 
