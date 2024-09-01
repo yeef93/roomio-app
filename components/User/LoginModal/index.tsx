@@ -78,18 +78,28 @@ const LoginModal: React.FC<LoginModalProps> = ({ onClose, onSuccess }) => {
         body: JSON.stringify({ email }),
       });
       const data = await response.json();
+      if (data.success) {        
       alert(
         data.success
           ? "Verification email resent. Please check your inbox."
           : "Failed to resend verification email. Please try again later."
       );
+      } else {
+        console.error(
+          "Failed to resend verification:",
+          data.statusMessage || "Unknown error"
+        );
+        alert("Failed to resend verification. Please try again later.");
+      }
+      
     } catch (error) {
       console.error("Error resending verification email:", error);
       alert("An error occurred while resending the verification email.");
     }
   };
 
-  const registerEmail = async (email: string) => {
+  const registerEmail = async (email: string, setSubmitting: (isSubmitting: boolean) => void) => {
+    setSubmitting(true); // Disable the button
     try {
       const response = await fetch(`${apiUrl}/auth/register/user`, {
         method: "POST",
@@ -99,14 +109,21 @@ const LoginModal: React.FC<LoginModalProps> = ({ onClose, onSuccess }) => {
         body: JSON.stringify({ email }),
       });
       const data = await response.json();
-      alert(
-        data.success
-          ? "Email successfully registered. Please check your inbox."
-          : "Failed to register email. Please try again later."
-      );
+      if (response.ok && data.success) {
+        alert("Email successfully registered. Please check your inbox.");
+        onSuccess(); // Perform success actions like closing the modal
+      } else {
+        console.error(
+          "Failed to register user:",
+          data.statusMessage || "Unknown error"
+        );
+        alert("Failed to register email. Please try again later.");
+      }
     } catch (error) {
       console.error("Error registering email:", error);
       alert("An error occurred while registering the email.");
+    } finally {
+      setSubmitting(false); // Re-enable the button
     }
   };
 
@@ -128,36 +145,20 @@ const LoginModal: React.FC<LoginModalProps> = ({ onClose, onSuccess }) => {
 
   const handleSubmit = async (values: any, { setSubmitting }: any) => {
     setLoginError(null);
+    // console.log(values.email, values.password)
     try {
-      const response = await fetch(`${apiUrl}/auth/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: values.email,
-          password: values.password,
-        }),
+      const result = await signIn("credentials", {
+        redirect: false,
+        email: values.email,
+        password: values.password,
       });
-  
-      const data = await response.json();
-  
-      if (response.ok && data.success) {
-        // Store the token securely
-        localStorage.setItem("token", data.data.token);
-  
-        // You can also update the session with this token if needed
-        await signIn("credentials", {
-          redirect: false,
-          email: values.email,
-          token: data.data.token, // Pass the token to the session
-        });
-  
+
+      if (result?.error) {
+        throw new Error(result.error);
+      } else {
         onSuccess();
         onClose();
         router.push(`/`);
-      } else {
-        throw new Error(data.statusMessage || "Login failed");
       }
     } catch (error) {
       console.error("Sign-in error:", error);
@@ -165,7 +166,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ onClose, onSuccess }) => {
         "Your email and password combination is incorrect. Please try again."
       );
     }
-  
+
     setSubmitting(false);
   };
 
@@ -199,7 +200,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ onClose, onSuccess }) => {
             validationSchema={validationSchema}
             onSubmit={handleSubmit}
           >
-            {({ isSubmitting, handleChange, values }) => (
+            {({ isSubmitting, handleChange, values, setSubmitting }) => (
               <Form>
                 <div className="mb-4">
                   <label
@@ -233,33 +234,33 @@ const LoginModal: React.FC<LoginModalProps> = ({ onClose, onSuccess }) => {
                   />
                 </div>
 
-                {emailStatus?.exists && emailStatus?.method === "email" && emailStatus.verified && (
-                  <div className="mb-2">
-                    <label
-                      htmlFor="password"
-                      className="block text-gray-700 text-sm font-bold mb-1"
-                    >
-                      Password
-                    </label>
-                    <Field
-                      type="password"
-                      name="password"
-                      id="password"
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
-                      placeholder="Enter your password"
-                    />
-                    <ErrorMessage
-                      name="password"
-                      component="p"
-                      className="text-red-500 text-xs italic"
-                    />
-                    <div className=" text-right font-semibold text-blue-800">
-                      <a href="#">
-                      Forgot password?
-                      </a>
+                {emailStatus?.exists &&
+                  emailStatus?.method === "email" &&
+                  emailStatus.verified && (
+                    <div className="mb-2">
+                      <label
+                        htmlFor="password"
+                        className="block text-gray-700 text-sm font-bold mb-1"
+                      >
+                        Password
+                      </label>
+                      <Field
+                        type="password"
+                        name="password"
+                        id="password"
+                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
+                        placeholder="Enter your password"
+                      />
+                      <ErrorMessage
+                        name="password"
+                        component="p"
+                        className="text-red-500 text-xs italic"
+                      />
+                      <div className=" text-right font-semibold text-blue-800">
+                        <a href="#">Forgot password?</a>
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
 
                 {emailStatus?.exists && emailStatus?.method !== "email" && (
                   <p className="text-red-500 text-xs italic mb-4">
@@ -271,10 +272,10 @@ const LoginModal: React.FC<LoginModalProps> = ({ onClose, onSuccess }) => {
                 {emailStatus && !emailStatus.exists && (
                   <button
                     type="button"
-                    className="bg-orange-600 hover:bg-orange-500 w-full text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                    onClick={() => registerEmail(values.email)}
+                    className="bg-orange-600 hover:bg-orange-700 w-full text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                    onClick={() => registerEmail(values.email, setSubmitting)}
                   >
-                    Register
+                    {isSubmitting ? "Registering..." : "Register"}
                   </button>
                 )}
 

@@ -3,19 +3,19 @@ import React, { useContext, useEffect, useState, useRef } from "react";
 import Image from "next/image";
 import Logo from "@/public/assets/logo.png";
 import MenuContext from "@/context/MenuContext";
-import Menu from "./Menu";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import LogoutModal from "./LogoutModal";
+import Menu from "./Menu";
 import LoginModal from "../User/LoginModal";
+import LogoutModal from "./LogoutModal";
 
 function Header() {
   const [showing, setShowing] = useState<boolean>(false);
+  const [isSignupModalOpen, setIsSignupModalOpen] = useState<boolean>(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState<boolean>(false);
   const [userData, setUserData] = useState<any>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
-
   const dropdownRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const { setShowing: setGlobalMenuShowing } = useContext(MenuContext);
@@ -23,32 +23,31 @@ function Header() {
   const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
   useEffect(() => {
-    if (session) {
+    if (session?.user?.token) {
       const fetchUserData = async () => {
-        // console.log(session.user.token)
         try {
           const response = await fetch(`${apiUrl}/users/me`, {
             method: "GET",
             headers: {
               Authorization: `Bearer ${session.user.token}`,
             },
-            credentials: "include", // Include cookies
+            credentials: "include",
           });
 
           if (response.ok) {
             const json = await response.json();
-            setUserData(json.data); // Store user data
+            setUserData(json.data);
           } else {
-            // console.error("Failed to fetch user data");
-            console.log(`${session.user.token}`);
+            console.error("Failed to fetch user data");
           }
         } catch (error) {
           console.error("Error fetching user data:", error);
         }
       };
+
       fetchUserData();
     }
-  }, [session]);
+  }, [session, apiUrl]);
 
   const handleClickButton = () => {
     setShowing((prev) => !prev);
@@ -57,10 +56,6 @@ function Header() {
 
   const handleSignUpClick = () => {
     setIsLoginModalOpen(true);
-  };
-
-  const handleCloseSignupModal = () => {
-    setIsLoginModalOpen(false);
   };
 
   const handleLoginClick = () => {
@@ -75,26 +70,25 @@ function Header() {
     setIsDropdownOpen((prev) => !prev);
   };
 
-  const handleLogoutClick = (e: any) => {
+  const handleLogoutClick = (e: React.MouseEvent) => {
     e.preventDefault();
     setIsLogoutModalOpen(true);
   };
-
 
   const handleLogoutConfirm = async () => {
     setIsLogoutModalOpen(false);
     try {
       const response = await fetch(`${apiUrl}/auth/logout`, {
-        method: "GET", // Assuming POST method for logout
+        method: "GET",
         headers: {
           Authorization: `Bearer ${session?.user.token}`,
         },
-        credentials: "include", // Include cookies
+        credentials: "include",
       });
 
       if (response.ok) {
-        await signOut(); // Sign out from NextAuth session
-        window.location.href = "/"; // Redirect to main page after successful logout
+        await signOut();
+        window.location.href = "/";
       } else {
         console.error("Failed to logout");
       }
@@ -126,15 +120,15 @@ function Header() {
       <nav className="bg-white fixed w-full z-20 top-0 start-0 border-b border-gray-200">
         <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
           <a href="/" className="flex items-center space-x-3">
-            <Image src={Logo} width={32} alt="Roomio Logo" />
-            <span className="self-center text-2xl font-semibold whitespace-nowrap text-indigo-600">
-              Roomio
+            <Image src={Logo} width={32} alt="Eventastic Logo" />
+            <span className="self-center text-2xl font-semibold whitespace-nowrap text-purple-800">
+              Eventastic
             </span>
           </a>
           <div className="flex md:order-2 space-x-3 md:space-x-0 relative">
             {status === "loading" ? (
               <span className="loader" />
-            ) : session && userData ? (
+            ) : status === "authenticated" && userData ? (
               <div className="relative group flex items-center justify-center">
                 <Image
                   src={userData.avatar?.imageUrl || "/assets/avatar.png"}
@@ -144,22 +138,22 @@ function Header() {
                   className="rounded-full border-2 w-8 h-8 cursor-pointer"
                   onClick={handleAvatarClick}
                 />
-                <span className="ml-2 text-gray-900">{userData.username}</span>
+                <span className="ml-2 text-gray-900">{userData.firstname || userData.email}</span>
                 {isDropdownOpen && (
                   <div
                     ref={dropdownRef}
                     className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-2 z-20"
-                    style={{ top: "40px" }} // Adjust this value to position the dropdown below the avatar
+                    style={{ top: "40px" }}
                   >
                     <a
-                      href={`/users/${userData.username}/dashboard`}
+                      href={`/users/${userData.email}/dashboard`}
                       className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                     >
                       Profile
                     </a>
-                    {userData.organizer === true && (
+                    {userData.tenant === true && (
                       <a
-                        href={`/organizer/${userData.username}/dashboard`}
+                        href={`/organizer/${userData.email}/dashboard`}
                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                       >
                         Organizer
@@ -175,23 +169,22 @@ function Header() {
                 )}
               </div>
             ) : (
-              <div className=" flex gap-1">
+              <>
                 <button
                   type="button"
-                  className="text-gray-900 font-medium rounded-lg text-sm px-4 py-2 text-center rounded-lg border border-indigo-600 hover:bg-slate-100"
+                  className="text-gray-900 font-medium rounded-lg text-sm px-4 py-2 text-center"
                   onClick={handleLoginClick}
                 >
-                  
-                  Log In
+                  Log in
                 </button>
                 <button
                   type="button"
-                  className="text-white bg-indigo-600 hover:text-gray-200 focus:ring-4 focus:outline-none focus:ring-indigo-600 font-medium rounded-lg text-sm px-4 py-2 text-center"
+                  className="text-white bg-purple-800 hover:text-gray-200 focus:ring-4 focus:outline-none focus:ring-purple-800 font-medium rounded-lg text-sm px-4 py-2 text-center"
                   onClick={handleSignUpClick}
                 >
-                  Register
+                  Sign up
                 </button>
-              </div>
+              </>
             )}
             <button
               onClick={handleClickButton}
@@ -211,6 +204,7 @@ function Header() {
               >
                 <path
                   stroke="currentColor"
+                  strokeLinecap="round"
                   strokeLinejoin="round"
                   strokeWidth="2"
                   d="M1 1h15M1 7h15M1 13h15"
@@ -228,6 +222,12 @@ function Header() {
           </div>
         </div>
       </nav>
+      {isSignupModalOpen && (
+        <LoginModal
+          onClose={handleCloseLoginModal}
+          onSuccess={() => setIsLoginModalOpen(false)}
+        />
+      )}
       {isLoginModalOpen && (
         <LoginModal
           onClose={handleCloseLoginModal}
