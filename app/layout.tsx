@@ -1,10 +1,9 @@
 import { Poppins } from "next/font/google";
 import type { Metadata } from "next";
 import "./globals.css";
-import { SessionProviders } from "./SessionProviders";
 import MenuProvider from "@/context/MenuProvider";
-import Footer from "@/components/Footer";
-import Header from "@/components/Header";
+import { Layout } from "@/components/common/Layout";
+import Footer from "@/components/common/Footer";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -25,12 +24,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={poppins.className}>
-        <SessionProviders>
+        <Layout>
           <MenuProvider>
             <main className="m-0 p-0 pt-10">{children}</main>
             <Footer />
           </MenuProvider>
-        </SessionProviders>
+        </Layout>
       </body>
     </html>
   );

@@ -3,10 +3,10 @@ import React, { useContext, useEffect, useState, useRef } from "react";
 import Image from "next/image";
 import Logo from "@/public/assets/logo.png";
 import MenuContext from "@/context/MenuContext";
-import LoginModal from "@/app/components/User/LoginModal";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import LogoutModal from "@/components/LogoutModal";
+import LogoutModal from "@/components/common/LogoutModal";
+import LoginModal from "@/components/User/LoginModal";
 
 function Header() {
   const [showing, setShowing] = useState<boolean>(false);
@@ -135,7 +135,7 @@ function Header() {
           <div className="flex md:order-2 space-x-3 md:space-x-0 relative">
             {status === "loading" ? (
               <span className="loader" />
-            ) : session && userData ? (
+            ) : session ? (
               <div className="relative group flex items-center justify-center">
                 <Image
                   src={userData.avatar?.imageUrl || "/assets/avatar.png"}

@@ -5,9 +5,9 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import * as Yup from "yup";
-import Modal from "../../../../components/Modal";
 import { debounce } from "lodash";
-import LoadingDots from "../../../../components/LoadingDots";
+import Modal from "@/components/common/Modal";
+import LoadingDots from "@/components/common/LoadingDots";
 
 interface LoginModalProps {
   onClose: () => void;
@@ -253,6 +253,11 @@ const LoginModal: React.FC<LoginModalProps> = ({ onClose, onSuccess }) => {
                       component="p"
                       className="text-red-500 text-xs italic"
                     />
+                    <div className=" text-right font-semibold text-blue-800">
+                      <a href="#">
+                      Forgot password?
+                      </a>
+                    </div>
                   </div>
                 )}
 

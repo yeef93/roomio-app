@@ -3,11 +3,11 @@ import React, { useContext, useEffect, useState, useRef } from "react";
 import Image from "next/image";
 import Logo from "@/public/assets/logo.png";
 import MenuContext from "@/context/MenuContext";
-import Menu from "../Menu";
-import LoginModal from "@/app/components/User/LoginModal";
+import Menu from "./Menu";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import LogoutModal from "../LogoutModal";
+import LogoutModal from "./LogoutModal";
+import LoginModal from "../User/LoginModal";
 
 function Header() {
   const [showing, setShowing] = useState<boolean>(false);
@@ -39,13 +39,13 @@ function Header() {
             const json = await response.json();
             setUserData(json.data); // Store user data
           } else {
-            console.error("Failed to fetch user data");
+            // console.error("Failed to fetch user data");
+            console.log(`${session.user.token}`);
           }
         } catch (error) {
           console.error("Error fetching user data:", error);
         }
       };
-
       fetchUserData();
     }
   }, [session]);

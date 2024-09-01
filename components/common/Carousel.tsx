@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
-import SearchBar from '../SearchBar';
+import SearchBar from './SearchBar';
 
 interface CarouselProps {
   images: string[];

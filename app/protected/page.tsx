@@ -19,7 +19,7 @@ export default function ProtectedPage() {
   return (
     <div>
       <h1>Protected Page</h1>
-      <p>Welcome, {session?.user?.name}</p>
+      <p>Welcome, {session?.user?.email}</p>
     </div>
   );
 }
