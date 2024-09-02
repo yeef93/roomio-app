@@ -42,6 +42,7 @@ export const authOptions: NextAuthOptions = {
             return {
               ...user,
               email: credentials?.email,
+              token: user.data.token,
             };
           } else {
             throw new Error("Invalid credentials");

@@ -7,6 +7,7 @@ declare module "next-auth" {
     scope: string;
     sub: string;
     refreshToken: string;
+    message: string;
   }
 
   interface Session {
@@ -19,6 +20,7 @@ declare module "next-auth" {
       sub: string;
       refreshToken: string;
       avatar: string;
+      message: string;
     } & DefaultSession["user"];
   }
   
@@ -30,6 +32,7 @@ declare module "next-auth" {
       username: string;
       scope: string;
       sub: string;
+      message:string;
     }
   }
 }

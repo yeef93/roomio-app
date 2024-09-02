@@ -23,7 +23,8 @@ function Header() {
   const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
   useEffect(() => {
-    if (session?.user?.token) {
+    if (session) {
+      console.log(session);
       const fetchUserData = async () => {
         try {
           const response = await fetch(`${apiUrl}/users/me`, {
@@ -120,9 +121,9 @@ function Header() {
       <nav className="bg-white fixed w-full z-20 top-0 start-0 border-b border-gray-200">
         <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
           <a href="/" className="flex items-center space-x-3">
-            <Image src={Logo} width={32} alt="Eventastic Logo" />
-            <span className="self-center text-2xl font-semibold whitespace-nowrap text-purple-800">
-              Eventastic
+            <Image src={Logo} width={32} alt="Roomio Logo" />
+            <span className="self-center text-2xl font-semibold whitespace-nowrap text-indigo-800">
+              Roomio
             </span>
           </a>
           <div className="flex md:order-2 space-x-3 md:space-x-0 relative">
@@ -179,7 +180,7 @@ function Header() {
                 </button>
                 <button
                   type="button"
-                  className="text-white bg-purple-800 hover:text-gray-200 focus:ring-4 focus:outline-none focus:ring-purple-800 font-medium rounded-lg text-sm px-4 py-2 text-center"
+                  className="text-white bg-indigo-800 hover:text-gray-200 focus:ring-4 focus:outline-none focus:ring-purple-800 font-medium rounded-lg text-sm px-4 py-2 text-center"
                   onClick={handleSignUpClick}
                 >
                   Sign up

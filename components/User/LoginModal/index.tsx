@@ -18,6 +18,7 @@ interface EmailStatus {
   method: string;
   exists: boolean;
   verified: boolean;
+  role: string;
 }
 
 const LoginModal: React.FC<LoginModalProps> = ({ onClose, onSuccess }) => {
@@ -51,6 +52,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ onClose, onSuccess }) => {
           method: data.data.method,
           exists: data.data.exists,
           verified: data.data.verified,
+          role:data.data.role,
         });
       } else {
         setEmailStatus(null);
@@ -236,6 +238,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ onClose, onSuccess }) => {
 
                 {emailStatus?.exists &&
                   emailStatus?.method === "email" &&
+                  emailStatus?.role === "user" &&
                   emailStatus.verified && (
                     <div className="mb-2">
                       <label
@@ -262,11 +265,17 @@ const LoginModal: React.FC<LoginModalProps> = ({ onClose, onSuccess }) => {
                     </div>
                   )}
 
-                {emailStatus?.exists && emailStatus?.method !== "email" && (
+                {emailStatus?.exists && emailStatus?.role === "user" && emailStatus?.method !== "email" && (
                   <p className="text-red-500 text-xs italic mb-4">
                     This email is registered with social login. Please use the
                     respective method to log in.
                   </p>
+                )}
+
+                {emailStatus?.exists && emailStatus?.role !== "user" && (
+                  <p className="text-red-500 text-xs italic mb-4">
+                  This email already registered as Tenant. Please use another email to log in.
+                </p>
                 )}
 
                 {emailStatus && !emailStatus.exists && (
@@ -289,7 +298,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ onClose, onSuccess }) => {
                   </button>
                 )}
 
-                {emailStatus?.method === "email" && emailStatus?.verified && (
+                {emailStatus?.method === "email" && emailStatus?.role === "user" && emailStatus?.verified && (
                   <button
                     type="submit"
                     className="bg-indigo-800 hover:bg-indigo-700 w-full text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
