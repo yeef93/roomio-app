@@ -1,6 +1,4 @@
 import Image from "next/image";
-import Logo from "@/public/assets/icon.png";
-
 function Footer() {
   return (
     <div className="px-4 pt-16 mx-auto sm:max-w-xl md:max-w-full lg:max-w-screen-xl md:px-24 lg:px-8">
@@ -12,7 +10,7 @@ function Footer() {
             title="Roomio"
             className="inline-flex items-center"
           >
-            <Image src={Logo} alt="roomio Logo" width={50} height={50} />
+            <Image src="/assets/logo.png" alt="roomio Logo" width={50} height={50} />
             <span className="ml-2 text-xl font-bold tracking-wide text-indigo-600 uppercase">
               Roomio
             </span>

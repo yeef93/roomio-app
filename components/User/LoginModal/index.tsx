@@ -6,8 +6,8 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import * as Yup from "yup";
 import { debounce } from "lodash";
-import Modal from "@/components/common/Modal";
-import LoadingDots from "@/components/common/LoadingDots";
+import Modal from "@/components/Modal";
+import LoadingDots from "@/components/LoadingDots";
 
 interface LoginModalProps {
   onClose: () => void;

@@ -1,7 +1,7 @@
 
-import Carousel from "@/components/common/Carousel";
-import Header from "@/components/common/Header";
-import SearchBar from "@/components/common/SearchBar";
+import Carousel from "@/components/Carousel";
+import Header from "@/components/Header";
+import SearchBar from "@/components/SearchBar";
 
 export default function Home() {
   const images: string[] = [

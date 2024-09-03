@@ -1,12 +1,11 @@
 "use client";
 import React, { useContext, useEffect, useState, useRef } from "react";
 import Image from "next/image";
-import Logo from "@/public/assets/logo.png";
 import MenuContext from "@/context/MenuContext";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Menu from "./Menu";
-import LoginModal from "../User/LoginModal";
+import LoginModal from "./User/LoginModal";
 import LogoutModal from "./LogoutModal";
 
 function Header() {
@@ -24,7 +23,7 @@ function Header() {
 
   useEffect(() => {
     if (session) {
-      console.log(session);
+      // console.log(session);
       const fetchUserData = async () => {
         try {
           const response = await fetch(`${apiUrl}/users/me`, {
@@ -121,7 +120,7 @@ function Header() {
       <nav className="bg-white fixed w-full z-20 top-0 start-0 border-b border-gray-200">
         <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
           <a href="/" className="flex items-center space-x-3">
-            <Image src={Logo} width={32} alt="Roomio Logo" />
+            <Image src="/assets/logo.png" width={32} height={32} alt="Roomio Logo" />
             <span className="self-center text-2xl font-semibold whitespace-nowrap text-indigo-800">
               Roomio
             </span>
