@@ -4,8 +4,14 @@ import { useRouter } from "next/navigation";
 
 function VerifyPage() {
   const router = useRouter();
-  const query = new URLSearchParams(window.location.search);
-  const token = query.get("token");
+  // const query = new URLSearchParams(window.location.search);
+  // const token = query.get("token");
+  const getTokenFromUrl = () => {
+    const match = window.location.search.match(/[?&]token=([^&]+)/);
+    return match ? match[1] : null;
+  };
+  
+  const token = getTokenFromUrl();
   const [validToken, setValidToken] = useState<boolean | null>(null);
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
