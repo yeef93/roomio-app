@@ -1,5 +1,6 @@
 
 import Carousel from "@/components/Carousel";
+import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import SearchBar from "@/components/SearchBar";
 
@@ -18,7 +19,8 @@ export default function Home() {
       <div className=" pt-7">
         <Carousel images={images} />
         {/* <SearchBar /> */}
-      </div>
+      </div>      
+      <Footer />
     </>
   );
 }

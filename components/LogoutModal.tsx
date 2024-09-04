@@ -27,7 +27,7 @@ function LogoutModal ({ isOpen, onClose, onConfirm }: LogoutModalProps){
           </button>
           <button
             onClick={onConfirm}
-            className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-md"
+            className="px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-md"
           >
             Logout
           </button>

@@ -3,7 +3,6 @@ import type { Metadata } from "next";
 import "./globals.css";
 import MenuProvider from "@/context/MenuProvider";
 import { Layout } from "@/components/Layout";
-import Footer from "@/components/Footer";
 import { Suspense } from "react";
 
 const poppins = Poppins({
@@ -30,7 +29,6 @@ export default function RootLayout({
             <Suspense fallback={<div>Loading...</div>}>
               <main className="m-0 p-0 pt-10">{children}</main>
             </Suspense>
-            <Footer />
           </MenuProvider>
         </Layout>
       </body>
