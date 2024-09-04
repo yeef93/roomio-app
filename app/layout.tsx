@@ -27,7 +27,7 @@ export default function RootLayout({
         <Layout>
           <MenuProvider>
             <Suspense fallback={<div>Loading...</div>}>
-              <main className="m-0 p-0 pt-10">{children}</main>
+              <main className="m-0 p-0">{children}</main>
             </Suspense>
           </MenuProvider>
         </Layout>

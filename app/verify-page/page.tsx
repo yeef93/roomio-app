@@ -4,8 +4,6 @@ import { useRouter, useSearchParams } from "next/navigation";
 
 function VerifyPage() {
   const router = useRouter();
-  // const query = new URLSearchParams(window.location.search);
-  // const token = query.get("token");
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
   const [validToken, setValidToken] = useState<boolean | null>(null);
@@ -46,7 +44,7 @@ function VerifyPage() {
     e.preventDefault();
 
     if (password !== confirmPassword) {
-      alert("Passwords do not match!");
+      setError("Error! Confirm Password Not Match");
       return;
     }
 
@@ -72,11 +70,11 @@ function VerifyPage() {
           "Failed to verify email user:",
           data.statusMessage || "Unknown error"
         );
-        alert("Failed to verify email. Please try again.");
+        setError("Failed to verify email. Please try again.");
       }
     } catch (error) {
       console.error("Verification failed:", error);
-      alert("Verification failed.");
+      setError("Verification failed.");
     }
   };
 
@@ -102,42 +100,63 @@ function VerifyPage() {
   };
 
   return (
-    <div>
-      {validToken === null && <p>Loading...</p>}
-      {validToken === false && (
-        <div>
-          <p>Invalid or expired token.</p>
-          <input
-            type="email"
-            placeholder="Enter your email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-          <button onClick={resendVerificationToken}>
-            Resend Verification Email
-          </button>
-        </div>
-      )}
-      {validToken === true && (
-        <form onSubmit={handleSubmit}>
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-          <input
-            type="password"
-            placeholder="Confirm Password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            required
-          />
-          <button type="submit">Verify</button>
-        </form>
-      )}
+    <div className="flex justify-center items-center min-h-screen bg-gray-100">
+      <div className="w-full max-w-md p-6 bg-white shadow-lg rounded-lg">
+        <h2 className="text-xl font-semibold text-center mb-4">
+          Verify Email User
+        </h2>
+        {error && (
+          <div className="bg-red-100 text-red-700 p-2 rounded mb-4">
+            {error}
+          </div>
+        )}
+        {validToken === null && <p>Loading...</p>}
+        {validToken === false && (
+          <div>
+            <p className="text-red-700 mb-4">Invalid or expired token.</p>
+            <input
+              type="email"
+              placeholder="Enter your email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full p-2 border border-gray-300 rounded mb-4"
+              required
+            />
+            <button
+              onClick={resendVerificationToken}
+              className="w-full bg-blue-500 text-white py-2 rounded"
+            >
+              Resend Verification Email
+            </button>
+          </div>
+        )}
+        {validToken === true && (
+          <form onSubmit={handleSubmit}>
+            <input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full p-2 border border-gray-300 rounded mb-4"
+              required
+            />
+            <input
+              type="password"
+              placeholder="Confirm Password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              className="w-full p-2 border border-gray-300 rounded mb-4"
+              required
+            />
+            <button
+              type="submit"
+              className="w-full bg-green-500 text-white py-2 rounded"
+            >
+              Verify
+            </button>
+          </form>
+        )}
+      </div>
     </div>
   );
 }

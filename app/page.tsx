@@ -16,7 +16,7 @@ export default function Home() {
   return (
     <>
       <Header />
-      <div className=" pt-7">
+      <div className=" pt-16">
         <Carousel images={images} />
         {/* <SearchBar /> */}
       </div>      
