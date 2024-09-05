@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
-function VerifyPage() {
+function ResetPassword() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
@@ -49,7 +49,7 @@ function VerifyPage() {
     }
 
     try {
-      const response = await fetch(`${apiUrl}/auth/verify`, {
+      const response = await fetch(`${apiUrl}/auth/reset-password`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -63,14 +63,14 @@ function VerifyPage() {
 
       const data = await response.json();
       if (response.ok && data.success) {
-        alert("Email successfully verified. User able to login.");
+        alert("Password successfully verified. User able to login.");
         router.push("/"); // Redirect to home
       } else {
         console.error(
-          "Failed to verify email user:",
+          "Failed to reset password:",
           data.statusMessage || "Unknown error"
         );
-        setError("Failed to verify email. Please try again.");
+        setError("Failed to reset password. Please try again.");
       }
     } catch (error) {
       console.error("Verification failed:", error);
@@ -78,9 +78,9 @@ function VerifyPage() {
     }
   };
 
-  const resendVerificationToken = async () => {
+  const resendForgotPassword = async () => {
     try {
-      const response = await fetch(`${apiUrl}/auth/resend-verification`, {
+      const response = await fetch(`${apiUrl}/auth/forgot-password`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -89,13 +89,13 @@ function VerifyPage() {
       });
 
       if (!response.ok) {
-        throw new Error("Failed to resend verification email");
+        throw new Error("Failed to send forgot password email");
       }
 
-      alert("Verification email resent. Please check your inbox.");
+      alert("Forgot Password email resent. Please check your inbox.");
     } catch (error) {
-      console.error("Error resending verification email:", error);
-      alert("An error occurred while resending the verification email.");
+      console.error("Error resending forgot password email:", error);
+      alert("An error occurred while sending the forgot password email.");
     }
   };
 
@@ -110,7 +110,7 @@ function VerifyPage() {
           />
         </div>
         <h2 className="text-xl font-semibold text-center mb-4">
-          Verify your email address
+        Reset Password Request.
         </h2>
         {error && (
           <div className="bg-red-100 text-red-700 p-2 rounded mb-4">
@@ -130,7 +130,7 @@ function VerifyPage() {
               required
             />
             <button
-              onClick={resendVerificationToken}
+              onClick={resendForgotPassword}
               className="w-full bg-blue-500 text-white py-2 rounded"
             >
               Resend Verification Email
@@ -141,7 +141,7 @@ function VerifyPage() {
           <form onSubmit={handleSubmit}>
             <input
               type="password"
-              placeholder="Password"
+              placeholder="New password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full p-2 border border-gray-300 rounded mb-4"
@@ -149,7 +149,7 @@ function VerifyPage() {
             />
             <input
               type="password"
-              placeholder="Confirm Password"
+              placeholder="Re-enter new password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               className="w-full p-2 border border-gray-300 rounded mb-4"
@@ -159,7 +159,7 @@ function VerifyPage() {
               type="submit"
               className="w-full bg-green-500 text-white py-2 rounded"
             >
-              Verify
+              Save
             </button>
           </form>
         )}
@@ -168,4 +168,4 @@ function VerifyPage() {
   );
 }
 
-export default VerifyPage;
+export default ResetPassword;

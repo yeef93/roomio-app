@@ -29,6 +29,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ onClose, onSuccess }) => {
   const [loginError, setLoginError] = useState<string | null>(null);
   const [emailStatus, setEmailStatus] = useState<EmailStatus | null>(null);
   const [isCheckingEmail, setIsCheckingEmail] = useState<boolean>(false);
+  const [forgotPasswordError, setForgotPasswordError] = useState<string | null>(null);
 
   useEffect(() => {
     if (status === "authenticated") {
@@ -52,7 +53,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ onClose, onSuccess }) => {
           method: data.data.method,
           exists: data.data.exists,
           verified: data.data.verified,
-          role:data.data.role,
+          role: data.data.role,
         });
       } else {
         setEmailStatus(null);
@@ -80,12 +81,12 @@ const LoginModal: React.FC<LoginModalProps> = ({ onClose, onSuccess }) => {
         body: JSON.stringify({ email }),
       });
       const data = await response.json();
-      if (data.success) {        
-      alert(
-        data.success
-          ? "Verification email resent. Please check your inbox."
-          : "Failed to resend verification email. Please try again later."
-      );
+      if (data.success) {
+        alert(
+          data.success
+            ? "Verification email resent. Please check your inbox."
+            : "Failed to resend verification email. Please try again later."
+        );
       } else {
         console.error(
           "Failed to resend verification:",
@@ -93,14 +94,16 @@ const LoginModal: React.FC<LoginModalProps> = ({ onClose, onSuccess }) => {
         );
         alert("Failed to resend verification. Please try again later.");
       }
-      
     } catch (error) {
       console.error("Error resending verification email:", error);
       alert("An error occurred while resending the verification email.");
     }
   };
 
-  const registerEmail = async (email: string, setSubmitting: (isSubmitting: boolean) => void) => {
+  const registerEmail = async (
+    email: string,
+    setSubmitting: (isSubmitting: boolean) => void
+  ) => {
     setSubmitting(true); // Disable the button
     try {
       const response = await fetch(`${apiUrl}/auth/register/user`, {
@@ -128,6 +131,38 @@ const LoginModal: React.FC<LoginModalProps> = ({ onClose, onSuccess }) => {
       setSubmitting(false); // Re-enable the button
     }
   };
+
+  const handleForgotPassword = async (email: string) => {
+    setForgotPasswordError(null);
+    if (!email) {
+      setForgotPasswordError("Please enter your email address.");
+      return;
+    }
+
+    try {
+      const response = await fetch(`${apiUrl}/auth/forgot-password`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      });
+      const data = await response.json();
+
+      if (data.success) {
+        alert("Password reset instructions have been sent to your email.");
+      } else {
+        setForgotPasswordError(
+          data.statusMessage || "Failed to send reset instructions."
+        );
+      }
+    } catch (error) {
+      console.error("Error sending password reset email:", error);
+      setForgotPasswordError("An error occurred. Please try again.");
+    }
+  };
+
+
 
   const initialValues = {
     email: "",
@@ -259,24 +294,32 @@ const LoginModal: React.FC<LoginModalProps> = ({ onClose, onSuccess }) => {
                         component="p"
                         className="text-red-500 text-xs italic"
                       />
-                      <div className=" text-right font-semibold text-blue-800">
-                        <a href="#">Forgot password?</a>
-                      </div>
+                      <button
+                        type="button"
+                        className=" text-right font-semibold text-blue-800 hover:text-blue-700 text-sm"
+                        onClick={() => handleForgotPassword(values.email)}
+                      >
+                        Forgot password?
+                      </button>
                     </div>
                   )}
 
-                {emailStatus?.exists && emailStatus?.role.toLowerCase() === "user" && emailStatus?.method !== "email" && (
-                  <p className="text-red-500 text-xs italic mb-4">
-                    This email is registered with social login. Please use the
-                    respective method to log in.
-                  </p>
-                )}
+                {emailStatus?.exists &&
+                  emailStatus?.role.toLowerCase() === "user" &&
+                  emailStatus?.method !== "email" && (
+                    <p className="text-red-500 text-xs italic mb-4">
+                      This email is registered with social login. Please use the
+                      respective method to log in.
+                    </p>
+                  )}
 
-                {emailStatus?.exists && emailStatus?.role.toLowerCase() !== "user" && (
-                  <p className="text-red-500 text-xs italic mb-4">
-                  This email already registered as Tenant. Please use another email to log in.
-                </p>
-                )}
+                {emailStatus?.exists &&
+                  emailStatus?.role.toLowerCase() !== "user" && (
+                    <p className="text-red-500 text-xs italic mb-4">
+                      This email already registered as Tenant. Please use
+                      another email to log in.
+                    </p>
+                  )}
 
                 {emailStatus && !emailStatus.exists && (
                   <button
@@ -298,19 +341,26 @@ const LoginModal: React.FC<LoginModalProps> = ({ onClose, onSuccess }) => {
                   </button>
                 )}
 
-                {emailStatus?.method === "email" && emailStatus?.role.toLowerCase() === "user" && emailStatus?.verified && (
-                  <button
-                    type="submit"
-                    className="bg-indigo-800 hover:bg-indigo-700 w-full text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                    disabled={isSubmitting}
-                  >
-                    {isSubmitting ? "Logging In..." : "Log In"}
-                  </button>
-                )}
+                {emailStatus?.method === "email" &&
+                  emailStatus?.role.toLowerCase() === "user" &&
+                  emailStatus?.verified && (
+                    <button
+                      type="submit"
+                      className="bg-indigo-800 hover:bg-indigo-700 w-full text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                      disabled={isSubmitting}
+                    >
+                      {isSubmitting ? "Logging In..." : "Log In"}
+                    </button>
+                  )}
 
                 {loginError && (
                   <p className="text-red-500 text-xs italic mb-4">
                     {loginError}
+                  </p>
+                )}
+                {forgotPasswordError && (
+                  <p className="text-red-500 text-xs italic">
+                    {forgotPasswordError}
                   </p>
                 )}
               </Form>

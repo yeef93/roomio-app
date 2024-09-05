@@ -36,6 +36,7 @@ function Header() {
           if (response.ok) {
             const json = await response.json();
             setUserData(json.data); // Store user data
+            console.log(session.user);
           } else {
             console.error("Failed to fetch user data");
           }
@@ -133,61 +134,62 @@ function Header() {
           </a>
           <div className="flex md:order-2 space-x-3 md:space-x-0 relative">
             {status === "loading" ? (
-              <span className="loader" />
-            ) : session ? (
-              <div className="relative group flex items-center justify-center">
-                <Image
-                  src={userData.avatar?.imageUrl || "/assets/avatar.png"}
-                  width={32}
-                  height={32}
-                  alt="User Avatar"
-                  className="rounded-full border-2 w-8 h-8 cursor-pointer"
-                  onClick={handleAvatarClick}
-                />
-                <span className="ml-2 text-gray-900">{userData.username}</span>
-                {isDropdownOpen && (
-                  <div
-                    ref={dropdownRef}
-                    className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-2 z-20"
-                    style={{ top: "40px" }} // Adjust this value to position the dropdown below the avatar
-                  >
-                    <a
-                      href={`/users/${userData.username}/dashboard`}
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                    >
-                      Profile
-                    </a>
-                    {userData.organizer === true && (
-                      <a
-                        href={`/organizer/${userData.username}/dashboard`}
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                      >
-                        Organizer
-                      </a>
-                    )}
-                    <button
-                      onClick={handleLogoutClick}
-                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                    >
-                      Logout
-                    </button>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <div className=" flex gap-2">
-                <div className="flex items-center justify-center text-center text-sm h-full w-full">
-                Already a partner?
-                </div>
-                <button
-                  type="button"
-                  className="text-white bg-indigo-600 hover:text-gray-200 focus:ring-4 focus:outline-none focus:ring-indigo-600 font-medium rounded-lg text-sm px-4 py-2 text-center text-nowrap"
-                  onClick={handleSignUpClick}
-                >
-                  Log In
-                </button>
-              </div>
-            )}
+  <span className="loader" />
+) : session && userData ? ( // Add a check for userData
+  <div className="relative group flex items-center justify-center">
+    <Image
+      src={userData.avatar?.imageUrl || "/assets/avatar.png"}
+      width={32}
+      height={32}
+      alt="Tenant Avatar"
+      className="rounded-full border-2 w-8 h-8 cursor-pointer"
+      onClick={handleAvatarClick}
+    />
+    <span className="ml-2 text-gray-900">{userData.firstname || userData.email}</span>
+    {isDropdownOpen && (
+      <div
+        ref={dropdownRef}
+        className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-2 z-20"
+        style={{ top: "40px" }} // Adjust this value to position the dropdown below the avatar
+      >
+        <a
+          href={`/users/${userData.username}/dashboard`}
+          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+        >
+          Profile
+        </a>
+        {userData.organizer === true && (
+          <a
+            href={`/organizer/${userData.username}/dashboard`}
+            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+          >
+            Organizer
+          </a>
+        )}
+        <button
+          onClick={handleLogoutClick}
+          className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+        >
+          Logout
+        </button>
+      </div>
+    )}
+  </div>
+) : (
+  <div className=" flex gap-2">
+    <div className="flex items-center justify-center text-center text-sm h-full w-full">
+      Already a partner?
+    </div>
+    <button
+      type="button"
+      className="text-white bg-indigo-600 hover:text-gray-200 focus:ring-4 focus:outline-none focus:ring-indigo-600 font-medium rounded-lg text-sm px-4 py-2 text-center text-nowrap"
+      onClick={handleSignUpClick}
+    >
+      Log In
+    </button>
+  </div>
+)}
+
             <button
               onClick={handleClickButton}
               data-collapse-toggle="navbar-sticky"
