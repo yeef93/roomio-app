@@ -160,7 +160,7 @@ function Footer() {
           <div className=" pt-16 lg:pt-16 md:pt-2">
             <p className="font-semibold tracking-wide text-gray-800 text-base ">Download Roomio App</p>
             <div>
-            <Image src="/assets/getit.png" alt="download App" width={100} height={20} className=' grayscale hover:grayscale-0' />
+            <Image src="/assets/getit.png" alt="download App" width={100} height={20} />
             </div>
           </div>
         </div>

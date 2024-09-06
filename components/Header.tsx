@@ -7,6 +7,18 @@ import { useRouter } from "next/navigation";
 import Menu from "./Menu";
 import LoginModal from "./User/LoginModal";
 import LogoutModal from "./LogoutModal";
+import {
+  ArrowLeftStartOnRectangleIcon,
+  BellIcon,
+  ChevronDownIcon,
+  CreditCardIcon,
+  GiftIcon,
+  IdentificationIcon,
+  PencilIcon,
+  ShoppingCartIcon,
+  TicketIcon,
+  UserIcon,
+} from "@heroicons/react/16/solid";
 
 function Header() {
   const [showing, setShowing] = useState<boolean>(false);
@@ -98,7 +110,10 @@ function Header() {
   };
 
   const handleOutsideClick = (event: MouseEvent) => {
-    if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+    if (
+      dropdownRef.current &&
+      !dropdownRef.current.contains(event.target as Node)
+    ) {
       setIsDropdownOpen(false);
     }
   };
@@ -120,7 +135,12 @@ function Header() {
       <nav className="bg-white fixed w-full z-20 top-0 start-0 border-b border-gray-200">
         <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
           <a href="/" className="flex items-center space-x-3">
-            <Image src="/assets/logo.png" width={32} height={32} alt="Roomio Logo" />
+            <Image
+              src="/assets/logo.png"
+              width={32}
+              height={32}
+              alt="Roomio Logo"
+            />
             <span className="self-center text-2xl font-semibold whitespace-nowrap text-indigo-800">
               Roomio
             </span>
@@ -130,15 +150,22 @@ function Header() {
               <span className="loader" />
             ) : status === "authenticated" && userData ? (
               <div className="relative group flex items-center justify-center">
-                <Image
-                  src={userData.avatar?.imageUrl || "/assets/avatar.png"}
-                  width={32}
-                  height={32}
-                  alt="User Avatar"
-                  className="rounded-full border-2 w-8 h-8 cursor-pointer"
+                <div
+                  className="flex flex-row justify-center items-center"
                   onClick={handleAvatarClick}
-                />
-                <span className="ml-2 text-gray-900">{userData.firstname || userData.email}</span>
+                >
+                  <Image
+                    src={userData.avatar?.imageUrl || "/assets/avatar.png"}
+                    width={32}
+                    height={32}
+                    alt="User Avatar"
+                    className="rounded-full border-2 w-8 h-8 cursor-pointer"
+                  />
+                  <span className="ml-2 text-gray-900">
+                    {userData.firstname || userData.email}
+                  </span>
+                  <ChevronDownIcon className="ml-1 h-5 w-5 text-gray-500" />
+                </div>
                 {isDropdownOpen && (
                   <div
                     ref={dropdownRef}
@@ -147,24 +174,33 @@ function Header() {
                   >
                     <a
                       href={`/users/${userData.email}/dashboard`}
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                     >
-                      Profile
+                      <UserIcon className="h-5 w-5 text-blue-500" />
+                      <span>Profile</span>
                     </a>
-                    {userData.tenant === true && (
-                      <a
-                        href={`/organizer/${userData.email}/dashboard`}
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                      >
-                        Organizer
-                      </a>
-                    )}
-                    <button
-                      onClick={handleLogoutClick}
-                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    <a
+                      href="#"
+                      className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                     >
-                      Logout
-                    </button>
+                      <ShoppingCartIcon className="h-5 w-5 text-blue-500" />
+                      <span>Purchase List</span>
+                    </a>
+
+                    <a
+                      href="#"
+                      className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >
+                      <TicketIcon className="h-5 w-5 text-blue-500" />
+                      <span>My Booking</span>
+                    </a>
+                    <a
+                      onClick={handleLogoutClick}
+                      className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >
+                      <ArrowLeftStartOnRectangleIcon className="h-5 w-5 text-blue-500" />
+                      <span>Logout</span>
+                    </a>
                   </div>
                 )}
               </div>
