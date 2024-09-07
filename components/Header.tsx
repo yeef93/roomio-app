@@ -5,20 +5,15 @@ import MenuContext from "@/context/MenuContext";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Menu from "./Menu";
-import LoginModal from "./User/LoginModal";
 import LogoutModal from "./LogoutModal";
 import {
   ArrowLeftStartOnRectangleIcon,
-  BellIcon,
   ChevronDownIcon,
-  CreditCardIcon,
-  GiftIcon,
-  IdentificationIcon,
-  PencilIcon,
   ShoppingCartIcon,
   TicketIcon,
   UserIcon,
 } from "@heroicons/react/16/solid";
+import LoginModal from "./User/LoginModal";
 
 function Header() {
   const [showing, setShowing] = useState<boolean>(false);
@@ -132,7 +127,7 @@ function Header() {
 
   return (
     <>
-      <nav className="bg-white fixed w-full z-20 top-0 start-0 border-b border-gray-200">
+      <nav className="bg-white fixed w-full z-20 top-0 start-0 border-b border-gray-200 shadow-sm">
         <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
           <a href="/" className="flex items-center space-x-3">
             <Image
@@ -173,7 +168,7 @@ function Header() {
                     style={{ top: "40px" }}
                   >
                     <a
-                      href={`/users/${userData.email}/dashboard`}
+                      href={`/user/profile`}
                       className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                     >
                       <UserIcon className="h-5 w-5 text-blue-500" />
@@ -211,14 +206,14 @@ function Header() {
                   className="text-gray-900 font-medium rounded-lg text-sm px-4 py-2 text-center"
                   onClick={handleLoginClick}
                 >
-                  Log in
+                  Log In
                 </button>
                 <button
                   type="button"
                   className="text-white bg-indigo-800 hover:text-gray-200 focus:ring-4 focus:outline-none focus:ring-purple-800 font-medium rounded-lg text-sm px-4 py-2 text-center"
                   onClick={handleSignUpClick}
                 >
-                  Sign up
+                  Register
                 </button>
               </>
             )}

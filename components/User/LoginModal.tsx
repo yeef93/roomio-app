@@ -21,7 +21,7 @@ interface EmailStatus {
   role: string;
 }
 
-const LoginModal: React.FC<LoginModalProps> = ({ onClose, onSuccess }) => {
+function LoginModal({ onClose, onSuccess }:LoginModalProps) {
   const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL as string;
   const { data: session, status } = useSession();
   const router = useRouter();
