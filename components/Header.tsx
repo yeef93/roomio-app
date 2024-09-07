@@ -14,6 +14,7 @@ import {
   UserIcon,
 } from "@heroicons/react/16/solid";
 import LoginModal from "./User/LoginModal";
+import jwt, { JwtPayload } from "jsonwebtoken";
 
 function Header() {
   const [showing, setShowing] = useState<boolean>(false);
@@ -27,10 +28,21 @@ function Header() {
   const { setShowing: setGlobalMenuShowing } = useContext(MenuContext);
   const { data: session, status } = useSession();
   const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+  const [isUser, setIsUser] = useState<boolean>(false);
 
   useEffect(() => {
-    if (session) {
-      // console.log(session);
+    if (session?.user?.token) {
+      const decodedToken = jwt.decode(session?.user?.token || "") as JwtPayload | null;
+      // Check if the token scope includes "user"
+      console.log(decodedToken?.scope)
+      if (decodedToken?.scope?.includes("ROLE_USER")) {
+        setIsUser(true);
+      }
+    }
+  }, [session]);
+
+  useEffect(() => {
+    if (session && isUser) {
       const fetchUserData = async () => {
         try {
           const response = await fetch(`${apiUrl}/users/me`, {
@@ -43,7 +55,7 @@ function Header() {
 
           if (response.ok) {
             const json = await response.json();
-            setUserData(json.data);
+            setUserData(json.data); // Store user data
           } else {
             console.error("Failed to fetch user data");
           }
@@ -54,7 +66,7 @@ function Header() {
 
       fetchUserData();
     }
-  }, [session, apiUrl]);
+  }, [session, isUser]);
 
   const handleClickButton = () => {
     setShowing((prev) => !prev);

@@ -1,6 +1,7 @@
 "use client";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
+import jwt, { JwtPayload } from "jsonwebtoken";
 
 interface User {
   firstname: string;
@@ -17,6 +18,17 @@ function DetailProfile() {
   const [error, setError] = useState<string | null>(null);
   const { data: session } = useSession();
   const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+
+  useEffect(() => {
+    if (session?.user?.token) {
+      const decodedToken = jwt.decode(session?.user?.token || "") as JwtPayload | null;
+      // Check if the token scope includes "TENANT"
+      console.log(decodedToken?.scope)
+      if (decodedToken?.scope?.includes("ROLE_TENANT")) {
+        // router.push("/tenant"); // Redirect if scope tenant
+      }
+    }
+  }, [session]);
 
   // Fetch user data on component mount
   useEffect(() => {

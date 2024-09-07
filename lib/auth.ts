@@ -69,7 +69,7 @@ export const authOptions: NextAuthOptions = {
         token.email = user.email;
         token.token = user.token;
         token.username = user.username;
-        token.scope = user.scope === 'ROLE_TENANT' ? 'ROLE_TENANT' : 'ROLE_USER';
+        token.scope = user.scope;
         token.sub = user.sub;
       }
       return token;

@@ -152,10 +152,10 @@ function Footer() {
                 </li>
                 <li>
                   <a
-                    href="/"
+                    href="/become-partner"
                     className="text-gray-600 transition-colors duration-300 hover:text-deep-purple-accent-400"
                   >
-                    Register Your Accomodation
+                    Register Your Property
                   </a>
                 </li>
               </ul>

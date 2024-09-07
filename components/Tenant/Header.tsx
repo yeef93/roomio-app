@@ -4,8 +4,9 @@ import Image from "next/image";
 import MenuContext from "@/context/MenuContext";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import jwt, { JwtPayload } from "jsonwebtoken";
 import LogoutModal from "@/components/LogoutModal";
-import LoginModal from "@/components/User/LoginModal";
+import LoginModal from "./LoginModal";
 
 function Header() {
   const [showing, setShowing] = useState<boolean>(false);
@@ -13,6 +14,7 @@ function Header() {
   const [userData, setUserData] = useState<any>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+  const [isTenant, setIsTenant] = useState<boolean>(false);
 
   const dropdownRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
@@ -21,22 +23,30 @@ function Header() {
   const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
   useEffect(() => {
-    if (session) {
+    if (session?.user?.token) {
+      const decodedToken = jwt.decode(session?.user?.token || "") as JwtPayload | null;
+      // Check if the token scope includes "tenant"
+      if (decodedToken?.scope?.includes("ROLE_TENANT")) {
+        setIsTenant(true);
+      }
+    }
+  }, [session]);
+
+  useEffect(() => {
+    if (session && isTenant) {
       const fetchUserData = async () => {
-        // console.log(session.user.token)
         try {
           const response = await fetch(`${apiUrl}/users/me`, {
             method: "GET",
             headers: {
               Authorization: `Bearer ${session.user.token}`,
             },
-            credentials: "include", // Include cookies
+            credentials: "include",
           });
 
           if (response.ok) {
             const json = await response.json();
             setUserData(json.data); // Store user data
-            console.log(session.user);
           } else {
             console.error("Failed to fetch user data");
           }
@@ -47,7 +57,7 @@ function Header() {
 
       fetchUserData();
     }
-  }, [session]);
+  }, [session, isTenant]);
 
   const handleClickButton = () => {
     setShowing((prev) => !prev);
@@ -83,11 +93,11 @@ function Header() {
     setIsLogoutModalOpen(false);
     try {
       const response = await fetch(`${apiUrl}/auth/logout`, {
-        method: "GET", // Assuming POST method for logout
+        method: "GET", // Assuming GET method for logout
         headers: {
           Authorization: `Bearer ${session?.user.token}`,
         },
-        credentials: "include", // Include cookies
+        credentials: "include",
       });
 
       if (response.ok) {
@@ -127,68 +137,67 @@ function Header() {
       <nav className="bg-white fixed w-full z-20 top-0 start-0 border-b border-gray-200">
         <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
           <a href="/" className="flex items-center space-x-3">
-            <Image src="/assets/logo.png" width={32} height={32} alt="Roomio Logo" />
+            <Image
+              src="/assets/logo.png"
+              width={32}
+              height={32}
+              alt="Roomio Logo"
+            />
             <span className="self-center text-2xl font-semibold whitespace-nowrap text-indigo-600">
               Roomio
             </span>
           </a>
           <div className="flex md:order-2 space-x-3 md:space-x-0 relative">
             {status === "loading" ? (
-  <span className="loader" />
-) : session && userData ? ( // Add a check for userData
-  <div className="relative group flex items-center justify-center">
-    <Image
-      src={userData.avatar?.imageUrl || "/assets/avatar.png"}
-      width={32}
-      height={32}
-      alt="Tenant Avatar"
-      className="rounded-full border-2 w-8 h-8 cursor-pointer"
-      onClick={handleAvatarClick}
-    />
-    <span className="ml-2 text-gray-900">{userData.firstname || userData.email}</span>
-    {isDropdownOpen && (
-      <div
-        ref={dropdownRef}
-        className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-2 z-20"
-        style={{ top: "40px" }} // Adjust this value to position the dropdown below the avatar
-      >
-        <a
-          href={`/users/${userData.username}/dashboard`}
-          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-        >
-          Profile
-        </a>
-        {userData.organizer === true && (
-          <a
-            href={`/organizer/${userData.username}/dashboard`}
-            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-          >
-            Organizer
-          </a>
-        )}
-        <button
-          onClick={handleLogoutClick}
-          className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-        >
-          Logout
-        </button>
-      </div>
-    )}
-  </div>
-) : (
-  <div className=" flex gap-2">
-    <div className="flex items-center justify-center text-center text-sm h-full w-full">
-      Already a partner?
-    </div>
-    <button
-      type="button"
-      className="text-white bg-indigo-600 hover:text-gray-200 focus:ring-4 focus:outline-none focus:ring-indigo-600 font-medium rounded-lg text-sm px-4 py-2 text-center text-nowrap"
-      onClick={handleSignUpClick}
-    >
-      Log In
-    </button>
-  </div>
-)}
+              <span className="loader" />
+            ) : session && isTenant && userData ? (
+              <div className="relative group flex items-center justify-center">
+                <Image
+                  src={userData.avatar?.imageUrl || "/assets/avatar.png"}
+                  width={32}
+                  height={32}
+                  alt="Tenant Avatar"
+                  className="rounded-full border-2 w-8 h-8 cursor-pointer"
+                  onClick={handleAvatarClick}
+                />
+                <span className="ml-2 text-gray-900">
+                  {userData.firstname || userData.email}
+                </span>
+                {isDropdownOpen && (
+                  <div
+                    ref={dropdownRef}
+                    className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-2 z-20"
+                    style={{ top: "40px" }} // Adjust this value to position the dropdown below the avatar
+                  >
+                    <a
+                      href={`/users/${userData.username}/dashboard`}
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >
+                      Profile
+                    </a>
+                    <button
+                      onClick={handleLogoutClick}
+                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >
+                      Logout
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className=" flex gap-2">
+                <div className="flex items-center justify-center text-center text-sm h-full w-full">
+                  Already a partner?
+                </div>
+                <button
+                  type="button"
+                  className="text-white bg-indigo-600 hover:text-gray-200 focus:ring-4 focus:outline-none focus:ring-indigo-600 font-medium rounded-lg text-sm px-4 py-2 text-center text-nowrap"
+                  onClick={handleSignUpClick}
+                >
+                  Log In
+                </button>
+              </div>
+            )}
 
             <button
               onClick={handleClickButton}

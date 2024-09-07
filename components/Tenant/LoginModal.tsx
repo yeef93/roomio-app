@@ -32,16 +32,16 @@ function LoginModal({ onClose, onSuccess }:LoginModalProps) {
   const [isCheckingEmail, setIsCheckingEmail] = useState<boolean>(false);
   const [forgotPasswordError, setForgotPasswordError] = useState<string | null>(null);
 
-
   useEffect(() => {
     if (session?.user?.token) {
       const decodedToken = jwt.decode(session?.user?.token || "") as JwtPayload | null;
-      // Check if the token scope includes "user"
-      if (decodedToken?.scope?.includes("ROLE_USER")) {
-        router.push("/"); // Redirect if scope user
+      // Check if the token scope includes "TENANT"
+      if (decodedToken?.scope?.includes("ROLE_TENANT")) {
+        router.push("/tenant"); // Redirect if scope tenant
       }
     }
   }, [session, router]);
+
 
   const fetchCheckEmail = async (email: string) => {
     setIsCheckingEmail(true);
@@ -112,7 +112,7 @@ function LoginModal({ onClose, onSuccess }:LoginModalProps) {
   ) => {
     setSubmitting(true); // Disable the button
     try {
-      const response = await fetch(`${apiUrl}/auth/register/user`, {
+      const response = await fetch(`${apiUrl}/auth/register/tenant`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -125,7 +125,7 @@ function LoginModal({ onClose, onSuccess }:LoginModalProps) {
         onSuccess(); // Perform success actions like closing the modal
       } else {
         console.error(
-          "Failed to register user:",
+          "Failed to register tenant:",
           data.statusMessage || "Unknown error"
         );
         alert("Failed to register email. Please try again later.");
@@ -279,7 +279,7 @@ function LoginModal({ onClose, onSuccess }:LoginModalProps) {
 
                 {emailStatus?.exists &&
                   emailStatus?.method === "email" &&
-                  emailStatus?.role.toLowerCase() === "user" &&
+                  emailStatus?.role.toLowerCase() === "tenant" &&
                   emailStatus.verified && (
                     <div className="mb-2">
                       <label
@@ -311,7 +311,7 @@ function LoginModal({ onClose, onSuccess }:LoginModalProps) {
                   )}
 
                 {emailStatus?.exists &&
-                  emailStatus?.role.toLowerCase() === "user" &&
+                  emailStatus?.role.toLowerCase() === "tenant" &&
                   emailStatus?.method !== "email" && (
                     <p className="text-red-500 text-xs italic mb-4">
                       This email is registered with social login. Please use the
@@ -320,9 +320,9 @@ function LoginModal({ onClose, onSuccess }:LoginModalProps) {
                   )}
 
                 {emailStatus?.exists &&
-                  emailStatus?.role.toLowerCase() !== "user" && (
+                  emailStatus?.role.toLowerCase() !== "tenant" && (
                     <p className="text-red-500 text-xs italic mb-4">
-                      This email already registered as Tenant. Please use
+                      This email already registered as User. Please use
                       another email to log in.
                     </p>
                   )}
@@ -348,7 +348,7 @@ function LoginModal({ onClose, onSuccess }:LoginModalProps) {
                 )}
 
                 {emailStatus?.method === "email" &&
-                  emailStatus?.role.toLowerCase() === "user" &&
+                  emailStatus?.role.toLowerCase() === "tenant" &&
                   emailStatus?.verified && (
                     <button
                       type="submit"
