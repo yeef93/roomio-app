@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import LogoutModal from "@/components/LogoutModal";
 import LoginModal from "./LoginModal";
+import { ArrowLeftStartOnRectangleIcon, ChartBarIcon, HomeModernIcon, PresentationChartBarIcon, ShoppingCartIcon, StarIcon, TicketIcon, UserIcon } from "@heroicons/react/16/solid";
 
 function Header() {
   const [showing, setShowing] = useState<boolean>(false);
@@ -167,20 +168,50 @@ function Header() {
                   <div
                     ref={dropdownRef}
                     className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-2 z-20"
-                    style={{ top: "40px" }} // Adjust this value to position the dropdown below the avatar
+                    style={{ top: "40px" }}
                   >
                     <a
-                      href={`/users/${userData.username}/dashboard`}
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      href={`/user/profile`}
+                      className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                     >
-                      Profile
+                      <UserIcon className="h-5 w-5 text-blue-500" />
+                      <span>Profile</span>
                     </a>
-                    <button
-                      onClick={handleLogoutClick}
-                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    <a
+                      href="#"
+                      className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                     >
-                      Logout
-                    </button>
+                      <PresentationChartBarIcon className="h-5 w-5 text-blue-500" />
+                      <span>Dashboard</span>
+                    </a>
+                    <a
+                      href="#"
+                      className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >
+                      <HomeModernIcon className="h-5 w-5 text-blue-500" />
+                      <span>Properties</span>
+                    </a>
+                    <a
+                      href="#"
+                      className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >
+                      <StarIcon className="h-5 w-5 text-blue-500" />
+                      <span>Review</span>
+                    </a>
+                    <a
+                      href="#"
+                      className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >
+                      <ChartBarIcon className="h-5 w-5 text-blue-500" />
+                      <span>Sales</span>
+                    </a>
+                    <a
+                      onClick={handleLogoutClick}
+                      className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >
+                      <ArrowLeftStartOnRectangleIcon className="h-5 w-5 text-blue-500" />
+                      <span>Logout</span>
+                    </a>
                   </div>
                 )}
               </div>

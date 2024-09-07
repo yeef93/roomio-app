@@ -168,8 +168,6 @@ function LoginModal({ onClose, onSuccess }:LoginModalProps) {
     }
   };
 
-
-
   const initialValues = {
     email: "",
     password: "",
@@ -201,7 +199,7 @@ function LoginModal({ onClose, onSuccess }:LoginModalProps) {
       } else {
         onSuccess();
         onClose();
-        router.push(`/`);
+        router.push(`/tenant`);
       }
     } catch (error) {
       console.error("Sign-in error:", error);
