@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import LogoutModal from "@/components/LogoutModal";
 import LoginModal from "./LoginModal";
-import { ArrowLeftStartOnRectangleIcon, ChartBarIcon, HomeModernIcon, PresentationChartBarIcon, ShoppingCartIcon, StarIcon, TicketIcon, UserIcon } from "@heroicons/react/16/solid";
+import { ArrowLeftStartOnRectangleIcon, ChartBarIcon, HomeModernIcon, PresentationChartBarIcon, ShoppingCartIcon, StarIcon, TagIcon, TicketIcon, UserIcon } from "@heroicons/react/16/solid";
 
 function Header() {
   const [showing, setShowing] = useState<boolean>(false);
@@ -171,7 +171,7 @@ function Header() {
                     style={{ top: "40px" }}
                   >
                     <a
-                      href={`/user/profile`}
+                      href={`/tenant/profile`}
                       className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                     >
                       <UserIcon className="h-5 w-5 text-blue-500" />
@@ -204,6 +204,13 @@ function Header() {
                     >
                       <ChartBarIcon className="h-5 w-5 text-blue-500" />
                       <span>Sales</span>
+                    </a>
+                    <a
+                      href="#"
+                      className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >
+                      <TagIcon className="h-5 w-5 text-blue-500" />
+                      <span>Category</span>
                     </a>
                     <a
                       onClick={handleLogoutClick}

@@ -10,6 +10,7 @@ import {
   HomeModernIcon,
   PresentationChartBarIcon,
   StarIcon,
+  TagIcon,
   UserIcon,
 } from "@heroicons/react/16/solid";
 
@@ -99,6 +100,11 @@ function Sidebar() {
       href: `/tenant/sales`,
       label: "Sales",
       icon: ChartBarIcon,
+    },
+    {
+      href: `/tenant/category`,
+      label: "Category",
+      icon: TagIcon,
     },
   ];
 

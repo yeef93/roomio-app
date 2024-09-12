@@ -1,7 +1,7 @@
 "use client";
 import LogoutModal from "@/components/LogoutModal";
-import LoginModal from "@/components/User/LoginModal";
 import React, { useState } from "react";
+import LoginModal from "./LoginModal";
 
 const RegistrationBanner = () => {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState<boolean>(false);
