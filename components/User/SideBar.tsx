@@ -23,10 +23,9 @@ function Sidebar() {
     throw new Error("API base URL is not defined in environment variables");
   }
 
-    // Handle case where session is null or token is undefined
-    const token = session?.user?.token || ""; // Fallback to empty string if no token
-
-    const { avatarUrl, fullName, email, loading: userLoading } = useUserData();
+  // Handle case where session is null or token is undefined
+  const token = session?.user?.token || ""; // Fallback to empty string if no token
+  const { userData, loading: userLoading } = useUserData();
 
   // Handle logout logic using the hook
   const {
@@ -57,21 +56,21 @@ function Sidebar() {
 
   return (
     <div className="w-96 bg-white h-auto p-6 border rounded-lg shadow-sm md:w-1/4 mb-8 md:mb-0 ">
+      <div className="flex items-center justify-center">
+        <Image
+          className=" h-14 w-14 rounded-full border"
+          src={userData?.avatar.imageUrl || "/assets/avatar.png"}
+          alt={userData?.firstname || "User Avatar"}
+          width={96}
+          height={96}
+        />
+      </div>
       <div className="flex flex-row items-center mb-5 gap-2">
-        <div>
-          <Image
-            className="h-12 w-12 rounded-full"
-            src={avatarUrl}
-            alt={fullName || "User Avatar"}
-            width={96}
-            height={96}
-          />
-        </div>
         <div className="mt-2 text-center">
           <h4 className="font-semibold text-lg text-gray-700 capitalize font-poppins tracking-wide">
-            {fullName}
+            {userData?.firstname}
           </h4>
-          <p>{email}</p>
+          <p>{userData?.email}</p>
         </div>
       </div>
       <ul className="space-y-2 text-sm border-t pt-4">
@@ -104,7 +103,9 @@ function Sidebar() {
       </ul>
 
       {/* Show loading indicator during logout */}
-      {logoutLoading && <p className="text-center text-sm text-gray-500">Logging out...</p>}
+      {logoutLoading && (
+        <p className="text-center text-sm text-gray-500">Logging out...</p>
+      )}
 
       <LogoutModal
         isOpen={isLogoutModalOpen}

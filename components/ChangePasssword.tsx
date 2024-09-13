@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { signOut, useSession } from "next-auth/react";
-import SuccessModal from "../SuccessModal";
+import SuccessModal from "./SuccessModal";
 
 const ChangePassword = () => {
   const [errorMessage, setErrorMessage] = useState("");

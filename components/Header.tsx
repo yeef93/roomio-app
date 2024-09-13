@@ -34,7 +34,7 @@ function Header() {
     if (session?.user?.token) {
       const decodedToken = jwt.decode(session?.user?.token || "") as JwtPayload | null;
       // Check if the token scope includes "user"
-      // console.log(decodedToken?.scope)
+      console.log(decodedToken?.scope)
       if (decodedToken?.scope?.includes("ROLE_USER")) {
         setIsUser(true);
       }

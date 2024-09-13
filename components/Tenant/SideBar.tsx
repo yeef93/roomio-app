@@ -6,7 +6,11 @@ import LogoutModal from "@/components/LogoutModal";
 import { useSession } from "next-auth/react";
 import {
   ArrowLeftStartOnRectangleIcon,
-  ShoppingCartIcon,
+  ChartBarIcon,
+  HomeModernIcon,
+  PresentationChartBarIcon,
+  StarIcon,
+  TagIcon,
   TicketIcon,
   UserIcon,
 } from "@heroicons/react/16/solid";
@@ -25,8 +29,8 @@ function Sidebar() {
 
   // Handle case where session is null or token is undefined
   const token = session?.user?.token || ""; // Fallback to empty string if no token
+  const { userData, loading: userLoading } = useUserData();
 
-  const { avatarUrl, fullName, email, loading: userLoading } = useUserData();
   const {
     isLogoutModalOpen,
     handleLogoutClick,
@@ -37,48 +41,56 @@ function Sidebar() {
 
   const menuItems = [
     {
-      href: `/user/profile`,
+      href: `/tenant/profile`,
       label: "Profile",
       icon: UserIcon,
     },
     {
-      href: `/user/purchase`,
-      label: "Purchase List",
-      icon: ShoppingCartIcon,
+      href: `/tenant/dashboard`,
+      label: "Dashboard",
+      icon: PresentationChartBarIcon,
     },
     {
-      href: `/user/booking`,
-      label: "My Booking",
-      icon: TicketIcon,
+      href: `/tenant/properties`,
+      label: "Properties",
+      icon: HomeModernIcon,
     },
+    {
+      href: `/tenant/review`,
+      label: "Review",
+      icon: StarIcon,
+    },
+    {
+      href: `/tenant/sales`,
+      label: "Sales",
+      icon: ChartBarIcon,
+    },
+    {
+      href: `/tenant/category`,
+      label: "Category",
+      icon: TagIcon,
+    },    
   ];
 
   return (
-    <div className="w-96 bg-white h-auto p-6 border rounded-lg shadow-sm">
-      {/* Show loading indicator while fetching user data */}
-      {userLoading ? (
-        <div className="flex justify-center items-center h-24">
-          <span>Loading...</span>
+    <div className="w-96 bg-white h-auto p-6 border rounded-lg shadow-sm md:w-1/4 mb-8 md:mb-0 ">
+      <div className="flex items-center justify-center">
+        <Image
+          className=" h-14 w-14 rounded-full border"
+          src={userData?.avatar.imageUrl || "/assets/avatar.png"}
+          alt={userData?.firstname || "User Avatar"}
+          width={96}
+          height={96}
+        />
+      </div>
+      <div className="flex flex-row items-center mb-5 gap-2">
+        <div className="mt-2 text-center">
+          <h4 className="font-semibold text-lg text-gray-700 capitalize font-poppins tracking-wide">
+            {userData?.firstname}
+          </h4>
+          <p>{userData?.email}</p>
         </div>
-      ) : (
-        <div className="flex flex-row items-center mb-5 gap-2">
-          <div>
-            <Image
-              className="h-12 w-12 rounded-full"
-              src={avatarUrl}
-              alt={fullName || "User Avatar"}
-              width={96}
-              height={96}
-            />
-          </div>
-          <div className="mt-2 text-center">
-            <h4 className="font-semibold text-lg text-gray-700 capitalize font-poppins tracking-wide">
-              {fullName}
-            </h4>
-            <p>{email}</p>
-          </div>
-        </div>
-      )}
+      </div>
 
       <ul className="space-y-2 text-sm border-t pt-4">
         {menuItems.map((item) => (
@@ -110,7 +122,9 @@ function Sidebar() {
       </ul>
 
       {/* Show loading indicator during logout */}
-      {logoutLoading && <p className="text-center text-sm text-gray-500">Logging out...</p>}
+      {logoutLoading && (
+        <p className="text-center text-sm text-gray-500">Logging out...</p>
+      )}
 
       <LogoutModal
         isOpen={isLogoutModalOpen}

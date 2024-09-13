@@ -1,82 +1,23 @@
 "use client";
-import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
-import jwt, { JwtPayload } from "jsonwebtoken";
-
-interface User {
-  firstname: string;
-  lastname: string | null;
-  email: string;
-  avatarUrl: string;
-  birthdate: string | null;
-  phonenumber: string | null;
-}
+import { useState } from "react";
+import useUserData from "@/hooks/useUserData"; // Assuming the hook is located here
 
 function DetailProfile() {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-  const { data: session } = useSession();
-  const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
-
-  useEffect(() => {
-    if (session?.user?.token) {
-      const decodedToken = jwt.decode(session?.user?.token || "") as JwtPayload | null;
-      // Check if the token scope includes "TENANT"
-      console.log(decodedToken?.scope)
-      if (decodedToken?.scope?.includes("ROLE_TENANT")) {
-        // router.push("/tenant"); // Redirect if scope tenant
-      }
-    }
-  }, [session]);
-
-  // Fetch user data on component mount
-  useEffect(() => {
-    if (session) {
-      const fetchUserData = async () => {
-        try {
-          const response = await fetch(`${apiUrl}/users/me`, {
-            headers: {
-              Authorization: `Bearer ${session.user.token}`,
-            },
-          });
-          const data = await response.json();
-
-          if (data.success) {
-            const userData = data.data;
-            setUser({
-              firstname: userData.firstname,
-              lastname: userData.lastname,
-              email: userData.email,
-              avatarUrl: userData.avatar?.imageUrl || "",
-              birthdate: userData.birthdate,
-              phonenumber: userData.phonenumber,
-            });
-          } else {
-            setError("Failed to fetch user data.");
-          }
-        } catch (err) {
-          setError("An error occurred while fetching data.");
-        } finally {
-          setLoading(false);
-        }
-      };
-      fetchUserData();
-    }
-  }, []);
+  const { userData: user, loading, error } = useUserData();
+  const [updatedUser, setUpdatedUser] = useState(user); // Store the updated user information
 
   // Handle input changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    if (user) {
-      setUser({ ...user, [name]: value });
+    if (updatedUser) {
+      setUpdatedUser({ ...updatedUser, [name]: value });
     }
   };
 
   // Form submission (add your update logic here)
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Form submitted:", user);
+    console.log("Form submitted:", updatedUser);
     // Send updated data to the API (implement API update logic)
   };
 
@@ -155,9 +96,9 @@ function DetailProfile() {
         <label className="block text-sm font-medium text-gray-700">
           Profile Picture
         </label>
-        {user?.avatarUrl && (
+        {user?.avatar?.imageUrl && (
           <img
-            src={user.avatarUrl}
+            src={user.avatar.imageUrl}
             alt="Profile avatar"
             className="w-20 h-20 rounded-full mb-2"
           />
@@ -181,4 +122,5 @@ function DetailProfile() {
     </form>
   );
 }
+
 export default DetailProfile;

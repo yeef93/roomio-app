@@ -1,7 +1,6 @@
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import SideBar from "@/components/User/SideBar";
-import type { Metadata } from "next";
 
 export default function TeamsLayout({
   children,
