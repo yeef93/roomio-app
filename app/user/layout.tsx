@@ -1,7 +1,6 @@
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import SideBar from "@/components/User/SideBar";
-import Sidebar from "@/components/User/SideBar";
 import type { Metadata } from "next";
 
 export default function TeamsLayout({
@@ -12,9 +11,9 @@ export default function TeamsLayout({
   return (
     <>
       <Header />
-      <div className=" flex flex-row pt-24 pb-8 px-36 h-auto bg-gray-100">
-        <SideBar />
-        <div className="px-4 w-full">{children}</div>
+      <div className="flex flex-col md:flex-row pt-24 pb-8 px-4 md:px-10 lg:px-36 h-auto bg-gray-100">
+        <SideBar/>
+        <div className="w-full px-4">{children}</div>
       </div>
       <Footer />
     </>
