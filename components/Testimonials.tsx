@@ -84,7 +84,7 @@ function Testimonials() {
           {/* Navigation buttons */}
           <button
             onClick={prevSlide}
-            className="absolute left-0 top-1/2 -translate-y-1/2 bg-softLavender text-gray-500 p-2 rounded-full px-4 hover:bg-lavender hover:text-white"
+            className="absolute left-0 top-1/2 -translate-y-1/2 bg-softLavender text-gray-500 p-2 rounded-full px-4 hover:bg-lavender hover:text-white border"
             disabled={currentSlide === 0}
           >
             &#10094;
