@@ -15,6 +15,8 @@ const config: Config = {
       },
       colors: {
         rain: '#007DCE',
+        softLavender: "#E6E6FA",
+        lavender: "#42326E",
       },
     },
   },

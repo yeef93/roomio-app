@@ -3,6 +3,7 @@ import Carousel from "@/components/Carousel";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import SearchBar from "@/components/SearchBar";
+import Testimonials from "@/components/Testimonials";
 
 export default function Home() {
   const images: string[] = [
@@ -19,7 +20,8 @@ export default function Home() {
       <div className=" pt-16">
         <Carousel images={images} />
         {/* <SearchBar /> */}
-      </div>      
+      </div>  
+      <Testimonials/>    
       <Footer />
     </>
   );

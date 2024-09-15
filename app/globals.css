@@ -14,3 +14,13 @@ main {
 .link:hover span:last-child {
   width: 100%;
 }
+
+.highlight {
+  margin: 0;
+  line-height: 1.5;
+  text-decoration: underline;
+  text-decoration-color: #6366f1;
+  text-decoration-thickness: 20px;
+  text-decoration-skip-ink: none;
+  text-underline-offset: -15px;
+}
