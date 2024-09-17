@@ -48,13 +48,13 @@ function Carousel ({ images }: CarouselProps) {
       {/* Navigation buttons */}
       <button
         onClick={prevSlide}
-        className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white py-2 px-3 rounded-full"
+        className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 px-4 rounded-full"
       >
         &#10094;
       </button>
       <button
         onClick={nextSlide}
-        className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white py-2 px-3 rounded-full"
+        className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 px-4 rounded-full"
       >
         &#10095;
       </button>

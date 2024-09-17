@@ -8,7 +8,7 @@ import Testimonials from "@/components/Testimonials";
 import { useProperties } from "@/hooks/useProperties";
 import PropertyCardSkeleton from "@/components/Skeleton/PropertyCardSkeleton";
 
-const Home = () => {
+function Home() {
   const { properties, loading, error } = useProperties();
 
   const images: string[] = [
@@ -23,7 +23,7 @@ const Home = () => {
       <div className="pt-16">
         <Carousel images={images} />
       </div>
-      <div className="py-16">
+      <div className="py-16 px-32">
         {loading ? (
           <div className="flex flex-wrap justify-center gap-4">
             {Array.from({ length: 3 }).map((_, index) => (
@@ -45,6 +45,10 @@ const Home = () => {
                 category={property.category}
                 tenant={property.tenant}
                 price={property.price}
+                checkin="2023-08-20"
+                checkout="2023-08-21"
+                room={1}
+                adult={1}
               />
             ))}
           </div>
@@ -60,6 +64,6 @@ const Home = () => {
       <Footer />
     </>
   );
-};
+}
 
 export default Home;
