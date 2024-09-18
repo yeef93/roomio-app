@@ -61,7 +61,7 @@ const ChangePassword = () => {
         }
       } catch (error) {
         setErrorMessage("Something went wrong. Please try again.");
-        console.log(error);
+        // console.log(error);
       }
       setSubmitting(false);
     },

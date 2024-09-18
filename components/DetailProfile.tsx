@@ -17,7 +17,7 @@ function DetailProfile() {
   // Form submission (add your update logic here)
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Form submitted:", updatedUser);
+    // console.log("Form submitted:", updatedUser);
     // Send updated data to the API (implement API update logic)
   };
 

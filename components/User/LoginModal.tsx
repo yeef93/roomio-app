@@ -38,7 +38,7 @@ function LoginModal({ onClose, onSuccess }:LoginModalProps) {
       const decodedToken = jwt.decode(session?.user?.token || "") as JwtPayload | null;
       // Check if the token scope includes "user"
       if (decodedToken?.scope?.includes("ROLE_USER")) {
-        router.push("/"); // Redirect if scope user
+        // router.push("/"); // Redirect if scope user
       }
     }
   }, [session, router]);
