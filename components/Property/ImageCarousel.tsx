@@ -20,12 +20,12 @@ export default function ImageCarousel({ images }: ImageCarouselProps) {
   }
 
   return (
-    <div className="relative mb-6 max-w-full overflow-hidden">
+    <div className="relative max-w-full overflow-hidden">
       {images.length > 0 && (
         <>
           <div className="flex">
             <div
-              className="flex transition-transform duration-500 ease-in-out"
+              className="flex transition-transform duration-500 ease-in-out gap-1"
               style={{
                 transform: `translateX(-${currentSlide * 83.33}%)`,
                 width: `${(images.length + 1) * 83.33}%`

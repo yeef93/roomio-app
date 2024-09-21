@@ -8,7 +8,7 @@ interface PropertyCardProps {
   name: string;
   location: string | null;
   city: string | null;
-  category: string;
+  category: { name: string; imageUrl: string };
   tenant: {
     id: number;
     email: string;
@@ -45,7 +45,9 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
   };
 
   const prevSlide = () => {
-    setCurrentIndex((prevIndex) => (prevIndex - 1 + images.length) % images.length);
+    setCurrentIndex(
+      (prevIndex) => (prevIndex - 1 + images.length) % images.length
+    );
   };
 
   // Create a URL-friendly property name
@@ -125,10 +127,8 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
         <p className="text-gray-600">
           {location}, {city}
         </p>
-        <p className="text-gray-600">{category}</p>
-        <p className="text-lg font-bold text-red-500">
-          Rp.{price.toFixed(2)}
-        </p>
+        <p className="text-gray-600">{category.name}</p>
+        <p className="text-lg font-bold text-red-500">Rp.{price.toFixed(2)}</p>
       </Link>
     </div>
   );

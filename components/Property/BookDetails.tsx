@@ -14,7 +14,7 @@ const BookingDetails: React.FC<BookingDetailsProps> = ({
   adult,
 }) => {
   return (
-    <div className="mt-8">
+    <div className="pt-10">
       <h2 className="text-2xl lg:text-3xl font-bold mb-4">Booking Details</h2>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <p>Check-in: {checkin || 'Not specified'}</p>

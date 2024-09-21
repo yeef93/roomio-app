@@ -56,7 +56,7 @@ const ChangePassword = () => {
               await signOut({ callbackUrl: "/" });
             }, 2000);
           } else {
-            setErrorMessage(data.message || "Failed to change password");
+            setErrorMessage(data.statusMessage  || "Failed to change password");
           }
         }
       } catch (error) {

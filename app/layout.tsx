@@ -12,7 +12,7 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "Roomio",
+  title: "Roomio | Room with a view, wherever you go.",
   description: "Room with a view, wherever you go.",
 };
 

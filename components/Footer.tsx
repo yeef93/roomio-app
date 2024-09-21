@@ -42,7 +42,7 @@ function Footer() {
                 </li>
                 <li>
                   <a
-                    href="/"
+                    href="/contact"
                     className="text-gray-600 transition-colors duration-300 hover:text-deep-purple-accent-400"
                   >
                     Contact Us
@@ -50,7 +50,7 @@ function Footer() {
                 </li>
                 <li>
                   <a
-                    href="/"
+                    href="/help-center"
                     className="text-gray-600 transition-colors duration-300 hover:text-deep-purple-accent-400"
                   >
                     Help Center

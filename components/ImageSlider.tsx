@@ -27,7 +27,7 @@ function ImageSlider({ images }: ImageSliderProps) {
   }, []);
 
   return (
-    <div className="relative w-full h-[75vh] md:h-[55vh]">
+    <div className="">
       {images.map((image, index) => (
         <div
           key={index}

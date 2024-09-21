@@ -37,7 +37,7 @@ function LoginModal({ onClose, onSuccess }:LoginModalProps) {
       const decodedToken = jwt.decode(session?.user?.token || "") as JwtPayload | null;
       // Check if the token scope includes "TENANT"
       if (decodedToken?.scope?.includes("ROLE_TENANT")) {
-        router.push("/tenant"); // Redirect if scope tenant
+        router.push("/tenant/profile"); // Redirect if scope tenant
       }
     }
   }, [session, router]);
@@ -199,7 +199,7 @@ function LoginModal({ onClose, onSuccess }:LoginModalProps) {
       } else {
         onSuccess();
         onClose();
-        router.push(`/tenant`);
+        router.push(`/tenant/profile`);
       }
     } catch (error) {
       console.error("Sign-in error:", error);

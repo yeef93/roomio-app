@@ -10,7 +10,7 @@ import {
   TicketIcon,
   UserIcon,
 } from "@heroicons/react/16/solid";
-import useUserData from "@/hooks/useUserData";
+import {useUserData} from "@/hooks/useUserData";
 import useLogout from "@/hooks/useLogout";
 
 function Sidebar() {
@@ -59,7 +59,7 @@ function Sidebar() {
       <div className="flex items-center justify-center">
         <Image
           className=" h-14 w-14 rounded-full border"
-          src={userData?.avatar.imageUrl || "/assets/avatar.png"}
+          src={userData?.avatar?.imageUrl || "/assets/avatar.png"}
           alt={userData?.firstname || "User Avatar"}
           width={96}
           height={96}

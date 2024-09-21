@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import Image from "next/image";
 
 function ResetPassword() {
   const router = useRouter();
@@ -102,15 +103,19 @@ function ResetPassword() {
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
       <div className="w-full max-w-md p-6 bg-white shadow-lg rounded-lg">
-        <div className="flex justify-center mb-6">
-          <img
-            src="/assets/logo.png" 
+        <div className="flex items-center justify-center mb-6">
+          <Image
+            src="/assets/logo.png"
+            width={32}
+            height={32}
             alt="Roomio Logo"
-            className="h-12" // Adjust the height as needed
           />
+          <span className="self-center text-2xl font-semibold whitespace-nowrap text-indigo-600">
+            Roomio
+          </span>
         </div>
         <h2 className="text-xl font-semibold text-center mb-4">
-        Reset Password Request.
+          Reset Password
         </h2>
         {error && (
           <div className="bg-red-100 text-red-700 p-2 rounded mb-4">

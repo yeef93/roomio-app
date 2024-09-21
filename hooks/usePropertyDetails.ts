@@ -1,5 +1,10 @@
 import { useState, useEffect } from 'react';
 
+interface RoomImage {
+  id: number;
+  imageUrl: string;
+}
+
 interface Room {
     id: number;
     name: string;
@@ -14,6 +19,7 @@ interface Room {
     isActive: boolean;
     currentPrice: number | null;
     actualPrice: number;
+    images: RoomImage[];
   }
 
   
@@ -23,7 +29,7 @@ interface PropertyDetails {
     description: string;
     location: string;
     city: string;
-    category: string;
+    category: { name: string; imageUrl: string };
     tenant: {
       id: number;
       email: string;

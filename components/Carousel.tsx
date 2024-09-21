@@ -9,7 +9,7 @@ interface CarouselWithSearchProps {
 
 const CarouselWithSearch: React.FC<CarouselWithSearchProps> = ({ images }) => {
   return (
-    <div className="relative w-full h-[75vh] md:h-[55vh]">
+    <div className="relative w-full h-[85vh] md:h-[70vh]">
       {/* Image Slider */}
       <ImageSlider images={images} />
 

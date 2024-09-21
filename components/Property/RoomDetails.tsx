@@ -1,0 +1,124 @@
+import React, { useState } from "react";
+import { FaTv, FaCoffee, FaBed } from "react-icons/fa";
+import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
+
+interface RoomImage {
+  id: number;
+  imageUrl: string;
+}
+
+interface Room {
+  id: number;
+  name: string;
+  description: string;
+  capacity: number;
+  size: number;
+  bedType: string;
+  totalBed: number;
+  qty: number;
+  basePrice: number;
+  totalBathroom: number;
+  isActive: boolean;
+  currentPrice: number | null;
+  actualPrice: number;
+  images: RoomImage[];
+}
+
+interface RoomDetailsProps {
+  rooms: Room[];
+}
+
+const RoomDetails: React.FC<RoomDetailsProps> = ({ rooms }) => {
+  return (
+    <div className="grid grid-cols-1 gap-6">
+      {rooms.map((room) => (
+        <RoomCard key={room.id} room={room} />
+      ))}
+    </div>
+  );
+};
+
+const RoomCard: React.FC<{ room: Room }> = ({ room }) => {
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  const handleNextImage = () => {
+    setCurrentImageIndex((prevIndex) =>
+      prevIndex === room.images.length - 1 ? 0 : prevIndex + 1
+    );
+  };
+
+  const handlePrevImage = () => {
+    setCurrentImageIndex((prevIndex) =>
+      prevIndex === 0 ? room.images.length - 1 : prevIndex - 1
+    );
+  };
+
+  return (
+    <div className="border rounded-lg shadow-md overflow-hidden relative bg-white p-4">     
+      <div className="p-4 flex justify-between">
+        <div className="flex flex-col justify-between w-3/4">
+          <div className="pb-4 border-b-2">
+            <h3 className="text-lg font-semibold text-gray-800 flex items-center">
+              {room.name}
+            </h3>
+            <p className="text-gray-600 mb-4">Room size: {room.size} sqft</p>
+
+            <div className="flex items-center space-x-4 text-gray-600">
+              <FaTv />
+              <FaCoffee />
+              <p className="text-red-600">+3 more</p>
+            </div>
+          </div>
+
+          <div className="mt-4">
+            <p className="text-red-600 text-2xl font-bold">
+              Rp{room.actualPrice.toFixed(3)}
+            </p>
+            {room.currentPrice && (
+              <p className="text-gray-500 line-through">
+                Rp {room.currentPrice.toFixed(3)}
+              </p>
+            )}
+            <p className="text-gray-500 text-sm">
+              {/* + Rp98.923 taxes & fee */}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div className="absolute bottom-4 right-4">
+        {room.images && room.images.length > 0 && (
+          <div className="relative w-full h-48">
+            <img
+              src={room.images[currentImageIndex].imageUrl}
+              alt={room.name}
+              className="object-cover w-56 h-full rounded-lg"
+            />
+
+            {room.images.length > 1 && (
+              <>
+                <button
+                  onClick={handlePrevImage}
+                  className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-white opacity-80 text-indigo-600 p-2 rounded-full"
+                >
+                  <FaArrowLeft />
+                </button>
+                <button
+                  onClick={handleNextImage}
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white opacity-80 text-indigo-600 p-2 rounded-full"
+                >
+                  <FaArrowRight />
+                </button>
+              </>
+            )}
+          </div>
+        )}
+        <button className="bg-orange-500 text-white font-semibold px-6 py-2 rounded-md flex items-center space-x-2">
+          <span>Choose</span>
+        </button>
+      </div>
+    </div>
+  );
+};
+
+export default RoomDetails;

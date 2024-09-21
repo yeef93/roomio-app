@@ -10,7 +10,6 @@ import {
   HomeModernIcon,
   PresentationChartBarIcon,
   StarIcon,
-  TagIcon,
   TicketIcon,
   UserIcon,
 } from "@heroicons/react/16/solid";
@@ -68,7 +67,7 @@ function Sidebar() {
     {
       href: `/tenant/category`,
       label: "Category",
-      icon: TagIcon,
+      icon: TicketIcon,
     },    
   ];
 

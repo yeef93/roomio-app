@@ -12,8 +12,10 @@ function Home() {
   const { properties, loading, error } = useProperties();
 
   const images: string[] = [
-    "https://images.pexels.com/photos/27054236/pexels-photo-27054236/free-photo-of-a-motorcycle-parked-on-the-side-of-a-road.jpeg",
-    "https://images.pexels.com/photos/18802955/pexels-photo-18802955/free-photo-of-kids-playing-soccer.png?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+    "/assets/hero/promohero.webp",
+    "https://images.pexels.com/photos/1732414/pexels-photo-1732414.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+    "https://images.pexels.com/photos/1134175/pexels-photo-1134175.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+    "https://images.pexels.com/photos/2677398/pexels-photo-2677398.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",    
     // Add more image paths as needed
   ];
 
