@@ -5,6 +5,7 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import NotificationModal from "../NotificationModal";
 
 interface CategoryImage {
   id: number;
@@ -35,6 +36,8 @@ const CreateCategoryModal = ({ onClose, category, onSave }: CreateCategoryModalP
   const [uploading, setUploading] = useState(false);
   const { data: session } = useSession();
   const router = useRouter();
+  const [notificationMessage, setNotificationMessage] = useState<string | null>(null);
+  const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL; 
 
   const validationSchema = Yup.object().shape({
     name: Yup.string().required("Category name is required"),
@@ -43,7 +46,7 @@ const CreateCategoryModal = ({ onClose, category, onSave }: CreateCategoryModalP
       .test('fileSize', 'File is too large', function (value) {
         if (!value) return true; // Allow empty files
         if (value instanceof File) {
-          return value.size <= 5000000; // 5MB
+          return value.size <= 1000000; // 1MB
         }
         return true; // If it's not a File object, skip this validation
       })
@@ -58,7 +61,7 @@ const CreateCategoryModal = ({ onClose, category, onSave }: CreateCategoryModalP
     if (session) {
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_BASE_URL}/categories/image/upload`,
+          `${apiUrl}/categories/image/upload`,
           {
             headers: {
               Authorization: `Bearer ${session.user.token}`,
@@ -96,8 +99,8 @@ const CreateCategoryModal = ({ onClose, category, onSave }: CreateCategoryModalP
         newImageId = uploadResult.id;
         newImageUrl = uploadResult.imageUrl;
       } else {
-        alert("Image upload failed.");
         setUploading(false);
+        setNotificationMessage("Image upload failed.");
         return;
       }
     }
@@ -111,7 +114,9 @@ const CreateCategoryModal = ({ onClose, category, onSave }: CreateCategoryModalP
       };
 
       await onSave(categoryData);
+      setNotificationMessage(category ? "Category updated successfully!" : "Category created successfully!");
       onClose();
+      window.location.reload();
     } catch (error) {
       console.error("Error submitting category:", error);
       alert(category ? "Failed to update category" : "Failed to create category");
@@ -170,7 +175,7 @@ const CreateCategoryModal = ({ onClose, category, onSave }: CreateCategoryModalP
                 />
                 <ErrorMessage name="image" component="div" className="text-red-500 text-sm" />
                 {imageUrl && (
-                  <img src={imageUrl} alt="Current category image" className="mt-2 w-full h-32 object-cover" />
+                  <img src={imageUrl} alt="Current category image" className="mt-2 w-14 h-14 object-cover" />
                 )}
               </div>
 

@@ -4,7 +4,7 @@ import { PlusIcon } from "@heroicons/react/16/solid";
 import CreateCategoryModal from "@/components/Tenant/CreateCategoryModal";
 import Pagination from "@/components/Pagination";
 import { useSession } from "next-auth/react";
-import NotificationModal from "@/components/NotifictionModal";
+import NotificationModal from "@/components/NotificationModal";
 
 interface CategoryImage {
   id: number;
@@ -52,16 +52,15 @@ function CategoryPage() {
     async function fetchCategories() {
       try {
         const response = await fetch(
-          `${apiUrl}/categories?page=${currentPage}&limit=${itemsPerPage}`
+          `${apiUrl}/categories?page=${currentPage - 1}&limit=${itemsPerPage}` // Adjust page index for API
         );
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
         const data = await response.json();
-
         if (data.success && data.data) {
-          setCategories(data.data);
-          setTotalPages(data.totalPages);
+          setCategories(data.data.categories);
+          setTotalPages(data.data.totalPages);
         } else {
           throw new Error("Failed to fetch categories");
         }
@@ -75,7 +74,7 @@ function CategoryPage() {
     }
 
     fetchCategories();
-  }, [apiUrl, currentPage]);
+  }, [apiUrl, currentPage]); // Depend on currentPage to refetch when it changes
 
   const handleEditClick = (category: Category) => {
     setEditingCategory(category);
@@ -208,36 +207,47 @@ function CategoryPage() {
           category={editingCategory}
           onSave={async (category: Category) => {
             try {
-              const method = category.id ? "PUT" : "POST"; // Use PUT for editing
-              const response = await fetch(
-                `${apiUrl}/categories${category.id ? `/${category.id}` : ""}`,
-                {
-                  method,
-                  headers: {
-                    "Content-Type": "application/json",
-                  },
-                  body: JSON.stringify(category),
+              if (session) {
+                const requestBody = {
+                  name: category.name,
+                  description: category.description,
+                  imageId: category.image?.id || null,
+                };
+
+                const method = category.id ? "PUT" : "POST"; // Use PUT for editing
+                const response = await fetch(
+                  `${apiUrl}/categories${category.id ? `/${category.id}` : ""}`,
+                  {
+                    method,
+                    headers: {
+                      Authorization: `Bearer ${session.user.token}`,
+                      "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(requestBody),
+                  }
+                );
+
+                if (!response.ok) {
+                  throw new Error("Failed to save category");
                 }
-              );
 
-              if (!response.ok) {
-                throw new Error("Failed to save category");
+                const updatedCategory = await response.json();
+                setCategories((prev) =>
+                  category.id
+                    ? prev.map((cat) =>
+                        cat.id === updatedCategory.id ? updatedCategory : cat
+                      )
+                    : [...prev, updatedCategory]
+                );
+
+                setShowModal(false);
+                setNotificationMessage(
+                  `Category ${
+                    category.id ? "updated" : "created"
+                  } successfully!`
+                ); // Set the success message
+                setShowNotificationModal(true); // Show notification modal
               }
-
-              const updatedCategory = await response.json();
-              setCategories((prev) =>
-                category.id
-                  ? prev.map((cat) =>
-                      cat.id === updatedCategory.id ? updatedCategory : cat
-                    )
-                  : [...prev, updatedCategory]
-              );
-
-              setShowModal(false);
-              setNotificationMessage(
-                `Category ${category.id ? "updated" : "created"} successfully!`
-              ); // Set the success message
-              setShowNotificationModal(true); // Show notification modal
             } catch (err) {
               setError("Failed to save category");
             }
@@ -278,11 +288,13 @@ function CategoryPage() {
         />
       )}
 
-      <Pagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={handlePageChange}
-      />
+      {!loading && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+        />
+      )}
     </div>
   );
 }

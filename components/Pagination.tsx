@@ -35,7 +35,7 @@ function Pagination ({ currentPage, totalPages, onPageChange }:PaginationProps){
         pageNumbers.push(
           <button
             key={i}
-            className={`mx-1 px-3 py-1 border rounded ${currentPage === i ? 'bg-purple-500 text-white' : 'bg-white text-purple-500'}`}
+            className={`mx-1 px-3 py-1 border rounded ${currentPage === i ? 'bg-indigo-500 text-white' : 'bg-white text-indigo-500'}`}
             onClick={() => handlePageClick(i)}
           >
             {i}
@@ -49,7 +49,7 @@ function Pagination ({ currentPage, totalPages, onPageChange }:PaginationProps){
           pageNumbers.push(
             <button
               key={page}
-              className={`mx-1 px-3 py-1 border rounded ${currentPage === page ? 'bg-purple-500 text-white' : 'bg-white text-purple-500'}`}
+              className={`mx-1 px-3 py-1 border rounded ${currentPage === page ? 'bg-indigo-500 text-white' : 'bg-white text-indigo-500'}`}
               onClick={() => handlePageClick(page)}
             >
               {page}
@@ -66,7 +66,7 @@ function Pagination ({ currentPage, totalPages, onPageChange }:PaginationProps){
         pageNumbers.push(
           <button
             key={currentPage}
-            className={`mx-1 px-3 py-1 border rounded ${'bg-purple-500 text-white'}`}
+            className={`mx-1 px-3 py-1 border rounded ${'bg-indigo-500 text-white'}`}
             onClick={() => handlePageClick(currentPage)}
           >
             {currentPage}
@@ -99,7 +99,7 @@ function Pagination ({ currentPage, totalPages, onPageChange }:PaginationProps){
   return (
     <div className="flex justify-center items-center mt-4">
       <button
-        className="mx-1 px-3 py-1 border rounded bg-white text-purple-500"
+        className="mx-1 px-3 py-1 border rounded bg-white text-indigo-500"
         onClick={handlePrevPage}
         disabled={currentPage === 1}
       >
@@ -107,7 +107,7 @@ function Pagination ({ currentPage, totalPages, onPageChange }:PaginationProps){
       </button>
       {renderPageNumbers()}
       <button
-        className="mx-1 px-3 py-1 border rounded bg-white text-purple-500"
+        className="mx-1 px-3 py-1 border rounded bg-white text-indigo-500"
         onClick={handleNextPage}
         disabled={currentPage === totalPages}
       >
