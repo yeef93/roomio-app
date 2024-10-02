@@ -5,7 +5,7 @@ import DetailProfile from "@/components/DetailProfile";
 function Profile() {
   const tabs = [
     { id: "detail", label: "Detail" },
-    { id: "security", label: "Password & Security" },
+    { id: "security", label: "Password" },
   ];
 
   const tabContent = [

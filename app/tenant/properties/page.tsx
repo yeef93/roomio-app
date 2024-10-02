@@ -22,6 +22,9 @@ function Properties() {
   const { userData, loading: userLoading } = useUserData();
   const id = userData?.id;
 
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+  const [propertyToDelete, setPropertyToDelete] = useState<number | null>(null);
+
   const pageSize = 10; // Number of items per page
 
   useEffect(() => {
@@ -71,6 +74,11 @@ function Properties() {
     }
   };
 
+  const handleDeleteClick = (propertyId: number) => {
+    setPropertyToDelete(propertyId);
+    setShowDeleteConfirmation(true); // Show delete confirmation
+  };
+
   return (
     <div className="bg-white border rounded-lg shadow-sm p-4">
       <div className="flex justify-between items-center">
@@ -85,59 +93,92 @@ function Properties() {
       </div>
 
       <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
+        <thead className="bg-gray-50">
+          <tr>
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Name
+            </th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Location
+            </th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              City
+            </th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Category
+            </th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Action
+            </th>
+          </tr>
+        </thead>
+        <tbody className="bg-white divide-y divide-gray-200">
+          {loading ? (
+            Array.from({ length: 5 }).map((_, index) => (
+              <tr key={index}>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <div className="h-4 bg-gray-200 rounded w-32 animate-pulse"></div>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <div className="h-4 bg-gray-200 rounded w-20 animate-pulse"></div>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <div className="h-4 bg-gray-200 rounded w-20 animate-pulse"></div>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <div className="h-4 bg-gray-200 rounded w-24 animate-pulse"></div>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <div className="h-4 bg-gray-200 rounded w-16 animate-pulse"></div>
+                </td>
+              </tr>
+            ))
+          ) : error ? (
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">City</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
+              <td colSpan={6} className="px-6 py-4 text-center text-red-500">
+                {error}
+              </td>
             </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {loading ? (
-              Array.from({ length: 5 }).map((_, index) => (
-                <tr key={index}>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    <div className="h-4 bg-gray-200 rounded w-32 animate-pulse"></div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    <div className="h-4 bg-gray-200 rounded w-20 animate-pulse"></div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    <div className="h-4 bg-gray-200 rounded w-20 animate-pulse"></div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    <div className="h-4 bg-gray-200 rounded w-24 animate-pulse"></div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    <div className="h-4 bg-gray-200 rounded w-16 animate-pulse"></div>
-                  </td>
-                </tr>
-              ))
-            ) : error ? (
-              <tr>
-                <td colSpan={6} className="px-6 py-4 text-center text-red-500">{error}</td>
+          ) : properties.length === 0 ? (
+            <tr>
+              <td colSpan={6} className="px-6 py-4 text-center text-gray-500">
+                No data available
+              </td>
+            </tr>
+          ) : (
+            properties.map((property) => (
+              <tr key={property.id}>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {property.name}
+                </td>
+                <td className="px-6 py-4 wrap text-sm text-gray-500">
+                  {property.location || "N/A"}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {property.city || "N/A"}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {property.category.name}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <button
+                    onClick={() =>
+                      router.push(`/tenant/properties/${property.id}`)
+                    }
+                    className="text-blue-500 hover:underline ml-4"
+                  >
+                    Detail
+                  </button>
+                  <button onClick={() => handleDeleteClick(property.id)}
+                  className="text-red-500 hover:underline ml-4">
+                    Delete
+                  </button>
+                </td>
               </tr>
-            ) : properties.length === 0 ? (
-              <tr>
-                <td colSpan={6} className="px-6 py-4 text-center text-gray-500">No data available</td>
-              </tr>
-            ) : (
-              properties.map((property) => (
-                <tr key={property.id}>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{property.name}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{property.location || "N/A"}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{property.city || "N/A"}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{property.category.name}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    <button className="text-red-500 hover:underline ml-4">Detail</button>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+            ))
+          )}
+        </tbody>
+      </table>
 
       {!loading && (
         <Pagination

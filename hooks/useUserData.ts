@@ -18,6 +18,7 @@ export interface UserData {
   birthdate: string | null;
   phonenumber: string | null;
   tenant: boolean;
+  method: string | null;
 }
 
 export const useUserData = () => {

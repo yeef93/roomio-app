@@ -11,7 +11,7 @@ export function useProperties() {
   useEffect(() => {
     async function fetchProperties() {
       try {
-        const response = await fetch(`${apiUrl}/property?sortBy=id&direction=asc&size=5`);
+        const response = await fetch(`${apiUrl}/property?sortBy=id&direction=asc&size=4`);
         const data = await response.json();
 
         if (!response.ok) {
@@ -19,7 +19,7 @@ export function useProperties() {
         }
 
         // Process properties to find the minimum actualPrice
-        const propertiesWithPrice = data.data.map((property: any) => {
+        const propertiesWithPrice = data.data.properties.map((property: any) => {
           // Find the minimum actualPrice from rooms
           const minPrice = property.rooms.reduce((min: number, room: any) => 
             room.isActive ? Math.min(min, room.actualPrice) : min, Infinity);

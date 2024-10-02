@@ -394,20 +394,6 @@ function LoginModal({ onClose, onSuccess }:LoginModalProps) {
               />
               Continue with Google
             </button>
-            <button
-              type="button"
-              className="w-full py-2 flex items-center justify-center bg-white border border-blue-300 rounded-md text-blue-500 hover:bg-gray-100"
-              onClick={() => signIn("facebook")}
-            >
-              <Image
-                src="https://img.icons8.com/color/48/facebook-new.png"
-                alt="Facebook"
-                width={20}
-                height={20}
-                className="mr-2"
-              />
-              Continue with Facebook
-            </button>
           </div>
         </div>
       </div>

@@ -3,6 +3,7 @@ export interface Property {
   id: number;
   images: { id: number; imageUrl: string }[]; // Make sure images include id
   name: string;
+  description: string;
   location: string | null;
   city: string | null;
   category: { name: string; imageUrl: string };

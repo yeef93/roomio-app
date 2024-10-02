@@ -1,9 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation'; // For navigation after success
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { useSession } from 'next-auth/react';
+import NotificationModal from '@/components/NotificationModal';
 
 interface Category {
   id: number;
@@ -13,12 +15,14 @@ interface Category {
 const CreatePropertyPage = () => {
   const [notificationMessage, setNotificationMessage] = useState<string | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [isSuccess, setIsSuccess] = useState(false); // Track success state
   const { data: session } = useSession();
+  const router = useRouter(); // Initialize useRouter for navigation
 
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/categories`);
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/categories?size=100`);
         if (!response.ok) {
           throw new Error('Failed to fetch categories');
         }
@@ -43,6 +47,7 @@ const CreatePropertyPage = () => {
 
   const handleSubmit = async (values: any) => {
     try {
+      console.log('Submitting values:', values);
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/property`, {
         method: 'POST',
         headers: {
@@ -58,17 +63,39 @@ const CreatePropertyPage = () => {
 
       const data = await response.json();
       console.log('Property created:', data);
+
+      // Show success message and set success state
       setNotificationMessage('Property created successfully!');
+      setIsSuccess(true);
+
+      // Automatically redirect after 3 seconds
+      setTimeout(() => {
+        router.push('/tenant/properties');
+      }, 3000);
+
     } catch (error) {
       console.error(error);
       setNotificationMessage('Failed to create property');
     }
   };
 
+  const handleCloseModal = () => {
+    setNotificationMessage(null);
+    setIsSuccess(false); // Reset success state
+  };
+
   return (
     <div className="bg-white border rounded-lg shadow-sm p-4">
       <h1 className="text-xl font-bold mb-4">Create Property</h1>
-      {notificationMessage && <div className="text-green-500 mb-4">{notificationMessage}</div>}
+
+      {/* Display notification modal */}
+      {notificationMessage && (
+        <NotificationModal
+          message={notificationMessage}
+          onClose={handleCloseModal}
+        />
+      )}
+
       <Formik
         initialValues={{
           name: '',

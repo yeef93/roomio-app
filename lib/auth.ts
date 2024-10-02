@@ -57,10 +57,10 @@ export const authOptions: NextAuthOptions = {
       clientId: ensureString(process.env.GOOGLE_CLIENT_ID),
       clientSecret: ensureString(process.env.GOOGLE_CLIENT_SECRET),
     }),
-    FacebookProvider({
-      clientId: ensureString(process.env.FACEBOOK_CLIENT_ID),
-      clientSecret: ensureString(process.env.FACEBOOK_CLIENT_SECRET),
-    }),
+    // FacebookProvider({
+    //   clientId: ensureString(process.env.FACEBOOK_CLIENT_ID),
+    //   clientSecret: ensureString(process.env.FACEBOOK_CLIENT_SECRET),
+    // }),
   ],
   callbacks: {
     async jwt({ token, user }) {
