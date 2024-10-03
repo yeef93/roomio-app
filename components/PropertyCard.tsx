@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { MapPinIcon, BuildingOfficeIcon } from "@heroicons/react/16/solid";
 
 interface PropertyCardProps {
   id: number;
@@ -124,11 +125,20 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
         className="block px-4 py-2"
       >
         <h2 className="text-xl font-semibold">{name}</h2>
-        <p className="text-gray-600">
+        <p className="text-gray-600 flex">
+          <MapPinIcon className="h-5 w-5 mr-1 text-indigo-600" />
           {location}, {city}
         </p>
-        <p className="text-gray-600">{category.name}</p>
-        <p className="text-lg font-bold text-red-500">Rp.{price.toFixed(2)}</p>
+        <p className="text-gray-600 flex">
+        <BuildingOfficeIcon className="h-5 w-5 mr-1 text-indigo-600" />
+        {category.name}</p>
+        <div className=" flex">
+          <p className="text-lg font-bold text-gray-600">Start From &nbsp;</p>
+          <p className="text-lg font-bold text-red-500">
+            {" "}
+            Rp.{price.toFixed(2)}
+          </p>
+        </div>
       </Link>
     </div>
   );

@@ -6,6 +6,7 @@ import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { useSession } from 'next-auth/react';
 import NotificationModal from '@/components/NotificationModal';
+import { ArrowLeftIcon } from '@heroicons/react/16/solid';
 
 interface Category {
   id: number;
@@ -86,7 +87,16 @@ const CreatePropertyPage = () => {
 
   return (
     <div className="bg-white border rounded-lg shadow-sm p-4">
+      <div className=" flex justify-between">
       <h1 className="text-xl font-bold mb-4">Create Property</h1>
+      <button
+        onClick={() => router.push("/tenant/properties")}
+        className="px-4 py-2 text-blue-500 flex"
+      >
+        <ArrowLeftIcon className="h-5 w-5 mr-1" />
+        Back
+      </button>
+      </div>      
 
       {/* Display notification modal */}
       {notificationMessage && (

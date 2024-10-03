@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation";
 import useUserData from "@/hooks/useUserData";
 import { useSession } from "next-auth/react";
 import Pagination from "@/components/Pagination";
+import Popup from "@/components/Popup ";
 
 function Properties() {
   const [properties, setProperties] = useState<Property[]>([]);
@@ -68,7 +69,6 @@ function Properties() {
   };
 
   const handlePageChange = (page: number) => {
-    // Ensure the page is valid and update the state to trigger useEffect
     if (page >= 1 && page <= totalPages) {
       setCurrentPage(page);
     }
@@ -76,7 +76,38 @@ function Properties() {
 
   const handleDeleteClick = (propertyId: number) => {
     setPropertyToDelete(propertyId);
-    setShowDeleteConfirmation(true); // Show delete confirmation
+    setShowDeleteConfirmation(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (propertyToDelete !== null) {
+      try {
+        const response = await fetch(`${apiUrl}/property/${propertyToDelete}`, {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to delete the property");
+        }
+
+        // Remove deleted property from state
+        setProperties((prev) =>
+          prev.filter((property) => property.id !== propertyToDelete)
+        );
+        setShowDeleteConfirmation(false);
+        setPropertyToDelete(null);
+      } catch (error) {
+        setError(error instanceof Error ? error.message : "Failed to delete");
+      }
+    }
+  };
+
+  const handleDeleteCancel = () => {
+    setShowDeleteConfirmation(false);
+    setPropertyToDelete(null);
   };
 
   return (
@@ -108,6 +139,9 @@ function Properties() {
               Category
             </th>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Status
+            </th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               Action
             </th>
           </tr>
@@ -124,6 +158,9 @@ function Properties() {
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                   <div className="h-4 bg-gray-200 rounded w-20 animate-pulse"></div>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <div className="h-4 bg-gray-200 rounded w-24 animate-pulse"></div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                   <div className="h-4 bg-gray-200 rounded w-24 animate-pulse"></div>
@@ -161,6 +198,9 @@ function Properties() {
                   {property.category.name}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {property.isPublish ? "Published" : "Draft"}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                   <button
                     onClick={() =>
                       router.push(`/tenant/properties/${property.id}`)
@@ -169,8 +209,10 @@ function Properties() {
                   >
                     Detail
                   </button>
-                  <button onClick={() => handleDeleteClick(property.id)}
-                  className="text-red-500 hover:underline ml-4">
+                  <button
+                    onClick={() => handleDeleteClick(property.id)}
+                    className="text-red-500 hover:underline ml-4"
+                  >
                     Delete
                   </button>
                 </td>
@@ -185,6 +227,16 @@ function Properties() {
           currentPage={currentPage}
           totalPages={totalPages}
           onPageChange={handlePageChange}
+        />
+      )}
+
+      {/* Confirmation Modal */}
+      {showDeleteConfirmation && (
+        <Popup
+          title="Confirm Delete"
+          description="Are you sure you want to delete this property?"
+          onConfirm={handleDeleteConfirm}
+          onCancel={handleDeleteCancel}
         />
       )}
     </div>

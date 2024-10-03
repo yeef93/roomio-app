@@ -15,8 +15,7 @@ function Home() {
     "/assets/hero/promohero.webp",
     "https://images.pexels.com/photos/1732414/pexels-photo-1732414.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
     "https://images.pexels.com/photos/1134175/pexels-photo-1134175.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-    "https://images.pexels.com/photos/2677398/pexels-photo-2677398.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",    
-    // Add more image paths as needed
+    "https://images.pexels.com/photos/2677398/pexels-photo-2677398.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
   ];
 
   return (
@@ -25,7 +24,7 @@ function Home() {
       <div className="pt-16">
         <Carousel images={images} />
       </div>
-      <div className="py-16 px-32">
+      <div className="py-16 px-4 sm:px-6 md:px-12 lg:px-20 xl:px-32">
         {loading ? (
           <div className="flex flex-wrap justify-center gap-4">
             {Array.from({ length: 3 }).map((_, index) => (
@@ -35,13 +34,13 @@ function Home() {
         ) : error ? (
           <p className="text-center text-red-500">{error}</p>
         ) : properties.length > 0 ? (
-          <div className="flex flex-wrap justify-center gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 justify-center">
             {properties.map((property) => (
               <PropertyCard
                 key={property.id}
                 id={property.id}
                 images={property.images}
-                name={property.name} // Use property name or title
+                name={property.name}
                 location={property.location}
                 city={property.city}
                 category={property.category}
@@ -56,7 +55,7 @@ function Home() {
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center my-8">
-            <p className="text-lg font-semibold text-gray-700">
+            <p className="text-lg font-semibold text-gray-700 text-center">
               Sorry, there are no properties available at the moment.
             </p>
           </div>

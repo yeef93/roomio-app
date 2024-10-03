@@ -10,7 +10,7 @@ import {
   HomeModernIcon,
   PresentationChartBarIcon,
   StarIcon,
-  TicketIcon,
+  TagIcon,
   UserIcon,
 } from "@heroicons/react/16/solid";
 import useUserData from "@/hooks/useUserData";
@@ -67,7 +67,7 @@ function Sidebar() {
     {
       href: `/tenant/category`,
       label: "Category",
-      icon: TicketIcon,
+      icon: TagIcon,
     },    
   ];
 

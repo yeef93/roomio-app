@@ -6,6 +6,7 @@ export interface Property {
   description: string;
   location: string | null;
   city: string | null;
+  isPublish : string ;
   category: { name: string; imageUrl: string };
   tenant: {
     id: number;

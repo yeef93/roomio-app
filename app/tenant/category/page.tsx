@@ -5,28 +5,9 @@ import CreateCategoryModal from "@/components/Tenant/CreateCategoryModal";
 import Pagination from "@/components/Pagination";
 import { useSession } from "next-auth/react";
 import NotificationModal from "@/components/NotificationModal";
+import Popup from "@/components/Popup ";
+import { Category } from "@/types/Category";
 
-interface CategoryImage {
-  id: number;
-  imageUrl: string;
-}
-
-interface CategoryTenant {
-  id: number;
-  email: string;
-  firstname: string;
-  lastname: string;
-  avatar: string;
-  createdAt: string;
-}
-
-interface Category {
-  id: number;
-  name: string;
-  description: string;
-  image?: CategoryImage;
-  tenant?: CategoryTenant;
-}
 
 function CategoryPage() {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -38,9 +19,7 @@ function CategoryPage() {
   const itemsPerPage = 10;
   const { data: session } = useSession();
   const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
-  const [notificationMessage, setNotificationMessage] = useState<string | null>(
-    null
-  );
+  const [notificationMessage, setNotificationMessage] = useState<string | null>(null);
   const [showNotificationModal, setShowNotificationModal] = useState(false);
 
   // State for editing
@@ -86,7 +65,11 @@ function CategoryPage() {
     setShowDeleteConfirmation(true); // Show delete confirmation
   };
 
-  const confirmDelete = async () => {
+  const handleDeleteCancel = () => {
+    setShowDeleteConfirmation(false);
+  };
+
+  const handleDeleteConfirm = async () => {
     if (categoryToDelete !== null) {
       try {
         const response = await fetch(
@@ -256,26 +239,12 @@ function CategoryPage() {
       )}
 
       {showDeleteConfirmation && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-6 rounded shadow-md">
-            <h3 className="text-lg font-semibold">Confirm Deletion</h3>
-            <p>Are you sure you want to delete this category?</p>
-            <div className="flex justify-end mt-4">
-              <button
-                onClick={() => setShowDeleteConfirmation(false)}
-                className="px-4 py-2 mr-2 text-gray-500 bg-gray-200 rounded"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={confirmDelete}
-                className="px-4 py-2 text-white bg-red-500 rounded"
-              >
-                Delete
-              </button>
-            </div>
-          </div>
-        </div>
+        <Popup
+        title="Confirm Delete"
+        description="Are you sure you want to delete this category?"
+        onConfirm={handleDeleteConfirm}
+        onCancel={handleDeleteCancel}
+      />        
       )}
 
       {showNotificationModal && (

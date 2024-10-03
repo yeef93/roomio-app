@@ -167,6 +167,12 @@ const DetailProfile: React.FC = () => {
     }
   };
 
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.target;
+    const numericValue = value.replace(/\D/g, '');
+    setUser((prevUser) => (prevUser ? { ...prevUser, phonenumber: numericValue } : null));
+  };
+
   if (loading) return <p>Loading...</p>;
   if (!user) return <p>No user data available.</p>;
 
@@ -211,7 +217,7 @@ const DetailProfile: React.FC = () => {
             type="text"
             name="phonenumber"
             value={user.phonenumber || ""}
-            onChange={handleChange}
+            onChange={handlePhoneChange}
             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
           />
         </div>
@@ -225,6 +231,7 @@ const DetailProfile: React.FC = () => {
             name="birthdate"
             value={user.birthdate || ""}
             onChange={handleChange}
+            max={new Date().toISOString().split("T")[0]}
             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
           />
         </div>
@@ -288,8 +295,7 @@ const DetailProfile: React.FC = () => {
                 Change Email
               </button>
             ) : (
-              <p className="text-red-500 mt-4">                
-              </p>
+              <p className="text-red-500 mt-4"></p>
             )}
           </div>
         </div>
