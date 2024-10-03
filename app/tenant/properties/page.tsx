@@ -8,6 +8,7 @@ import useUserData from "@/hooks/useUserData";
 import { useSession } from "next-auth/react";
 import Pagination from "@/components/Pagination";
 import Popup from "@/components/Popup ";
+import NotificationModal from "@/components/NotificationModal";
 
 function Properties() {
   const [properties, setProperties] = useState<Property[]>([]);
@@ -25,6 +26,10 @@ function Properties() {
 
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [propertyToDelete, setPropertyToDelete] = useState<number | null>(null);
+  const [notificationMessage, setNotificationMessage] = useState<string | null>(
+    null
+  );
+  const [showNotificationModal, setShowNotificationModal] = useState(false);
 
   const pageSize = 10; // Number of items per page
 
@@ -97,10 +102,18 @@ function Properties() {
         setProperties((prev) =>
           prev.filter((property) => property.id !== propertyToDelete)
         );
-        setShowDeleteConfirmation(false);
-        setPropertyToDelete(null);
+
+        setNotificationMessage("Property deleted successfully!"); // Set success message
+        setShowNotificationModal(true); // Show notification modal
+        setShowDeleteConfirmation(false); // Only close confirmation modal if successful
+        setPropertyToDelete(null); // Reset the property to delete
       } catch (error) {
+        // Handle deletion failure
+        setShowDeleteConfirmation(false);
         setError(error instanceof Error ? error.message : "Failed to delete");
+        setNotificationMessage("Failed to delete property."); // Set failure message
+        setShowNotificationModal(true); // Show notification modal
+        // Keep the confirmation modal open if delete failed, so user can retry or cancel
       }
     }
   };
@@ -203,7 +216,9 @@ function Properties() {
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                   <button
                     onClick={() =>
-                      router.push(`/tenant/properties/${property.id}`)
+                      property.isPublish
+                        ? router.push(`/tenant/properties/${property.id}`)
+                        : router.push(`/tenant/draft-properties/${property.id}`)
                     }
                     className="text-blue-500 hover:underline ml-4"
                   >
@@ -227,6 +242,16 @@ function Properties() {
           currentPage={currentPage}
           totalPages={totalPages}
           onPageChange={handlePageChange}
+        />
+      )}
+
+      {showNotificationModal && (
+        <NotificationModal
+          message={notificationMessage!}
+          onClose={() => {
+            setShowNotificationModal(false);
+            setNotificationMessage(null); // Clear message on close
+          }}
         />
       )}
 
