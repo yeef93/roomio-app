@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeftIcon } from "@heroicons/react/16/solid";
 import PropertyDetail from "@/components/Tenant/PropertyDetail";
@@ -11,7 +11,7 @@ const DraftProperty = () => {
     propertyName: "",
     description: "",
     price: "",
-    images: [],
+    images: [] as File[], // Correct the type to File[]
     facilities: [] as number[], // Use number array for facility IDs
   });
   const [rooms, setRooms] = useState([
@@ -90,7 +90,7 @@ const DraftProperty = () => {
         formData.append("images", image);
       });
       propertyData.facilities.forEach((facility) => {
-        formData.append("facilities[]", facility);
+        formData.append("facilities[]", facility.toString()); // Convert number to string
       });
 
       // Submit property data
