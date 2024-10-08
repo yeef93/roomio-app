@@ -36,7 +36,7 @@ const destinations = [
 
 const DestinationsGrid = () => {
   return (
-    <section className="py-8">
+    <section className="py-10">
       <h2 className="text-3xl font-bold text-center mb-8 text-slate-800">
       Top destinations in Indonesia
       </h2>

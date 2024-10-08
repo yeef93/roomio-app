@@ -44,9 +44,6 @@ const Multiselect: React.FC<MultiselectProps> = ({
 
   return (
     <div>
-      <label className="block text-sm font-medium text-gray-700">
-        Facilities
-      </label>
       <input
         type="text"
         placeholder="Search facilities..."

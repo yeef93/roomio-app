@@ -14,7 +14,7 @@ function Home() {
 
   const images: string[] = [
     "/assets/hero/promohero.webp",
-    "https://images.pexels.com/photos/1732414/pexels-photo-1732414.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+    "/assets/hero/promo.png",
     "https://images.pexels.com/photos/1134175/pexels-photo-1134175.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
     "https://images.pexels.com/photos/2677398/pexels-photo-2677398.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
   ];
@@ -25,7 +25,7 @@ function Home() {
       <div className="pt-16">
         <Carousel images={images} />
       </div>
-      <div className="container mx-auto px-24">
+      <div className="container mx-auto px-24 pt-20">
         <DestinationsGrid />
       </div>
       <div className="py-16 px-4 sm:px-6 md:px-12 lg:px-20 xl:px-32">

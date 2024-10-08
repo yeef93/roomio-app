@@ -136,7 +136,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
           <p className="text-lg font-bold text-gray-600">Start From &nbsp;</p>
           <p className="text-lg font-bold text-red-500">
             {" "}
-            Rp.{price.toFixed(2)}
+            Rp.{price.toFixed(0)}
           </p>
         </div>
       </Link>

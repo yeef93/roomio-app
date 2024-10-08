@@ -34,7 +34,7 @@ export async function middleware(req: NextRequest) {
     }
 
     if (req.nextUrl.pathname.startsWith("/tenant") && scope !== "ROLE_TENANT") {
-      return NextResponse.redirect(new URL("/", req.url));
+      return NextResponse.redirect(new URL("/become-partner", req.url));
     }
   }
 

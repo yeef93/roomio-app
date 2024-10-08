@@ -1,12 +1,17 @@
 "use client";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { ArrowLeftIcon } from "@heroicons/react/16/solid";
 import PropertyDetail from "@/components/Tenant/PropertyDetail";
 import Multiselect from "@/components/Multiselect";
+import { useSession } from "next-auth/react";
 
 const DraftProperty = () => {
+  const pathname = usePathname();
   const router = useRouter();
+  const propertyId = pathname.split("/").pop();
+  const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+  const { data: session } = useSession();
   const [propertyData, setPropertyData] = useState({
     propertyName: "",
     description: "",
@@ -73,57 +78,79 @@ const DraftProperty = () => {
     ]);
   };
 
+  const handleRemoveRoom = (index: number) => {
+    const updatedRooms = rooms.filter((_, i) => i !== index);
+    setRooms(updatedRooms);
+  };
+
   const handleFacilityChange = (facilityIds: number[]) => {
     setPropertyData({ ...propertyData, facilities: facilityIds });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+  
     try {
-      // Prepare form data
-      const formData = new FormData();
-      formData.append("propertyName", propertyData.propertyName);
-      formData.append("description", propertyData.description);
-      formData.append("price", propertyData.price);
+      // Step 2: Upload Images
+      const imageFormData = new FormData();
       propertyData.images.forEach((image) => {
-        formData.append("images", image);
-      });
-      propertyData.facilities.forEach((facility) => {
-        formData.append("facilities[]", facility.toString()); // Convert number to string
+        imageFormData.append("files", image);
       });
 
-      // Submit property data
-      const propertyResponse = await fetch("{{base_url}}/property", {
+      const imageResponse = await fetch(`${apiUrl}/property/${propertyId}/images`, {
+        headers: {
+          Authorization: `Bearer ${session?.user.token}`,
+        },
         method: "POST",
-        body: formData,
+        body: imageFormData,
       });
-      const propertyResult = await propertyResponse.json();
-      if (propertyResult.success) {
-        const propertyId = propertyResult.data.id;
 
-        // Submit rooms data
-        await Promise.all(
-          rooms.map(async (room) => {
-            const roomResponse = await fetch(
-              `{{base_url}}/property/${propertyId}/rooms`,
-              {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(room),
-              }
-            );
-            return roomResponse.json();
-          })
-        );
-
-        console.log("Property and rooms submitted successfully");
-        router.push("/tenant/properties");
+      const imageResult = await imageResponse.json();
+      if (!imageResult.success) {
+        throw new Error("Failed to upload images");
       }
+
+      // Step 3: Upload Facilities
+      const facilitiesResponse = await fetch(`${apiUrl}/property/${propertyId}/facilities`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${session?.user.token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          facilityIds: propertyData.facilities,
+        }),
+      });
+
+      const facilitiesResult = await facilitiesResponse.json();
+      if (!facilitiesResult.success) {
+        throw new Error("Failed to upload facilities");
+      }
+
+      // Step 4: Upload Rooms
+      await Promise.all(
+        rooms.map(async (room) => {
+          const roomResponse = await fetch(`${apiUrl}/property/${propertyId}/rooms`, {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${session?.user.token}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(room),
+          });
+          const roomResult = await roomResponse.json();
+          if (!roomResult.success) {
+            throw new Error("Failed to upload room");
+          }
+        })
+      );
+
+      console.log("Property images, facilities, and rooms submitted successfully");
+      router.push("/tenant/properties");
     } catch (error) {
       console.error("Error submitting property:", error);
     }
-  };
+  };  
 
   return (
     <div className="bg-white border rounded-lg shadow-sm p-4">
@@ -190,28 +217,115 @@ const DraftProperty = () => {
               <label className="block text-sm font-medium text-gray-700 mt-2">
                 Description
               </label>
-              <input
-                type="text"
+              <textarea
                 name="description"
                 value={room.description}
                 onChange={(e) => handleRoomChange(index, e)}
                 className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
               />
+
               {/* Additional fields for room details */}
+              <label className="block text-sm font-medium text-gray-700 mt-2">
+                Capacity
+              </label>
+              <input
+                type="number"
+                name="capacity"
+                value={room.capacity}
+                onChange={(e) => handleRoomChange(index, e)}
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+              />
+
+              <label className="block text-sm font-medium text-gray-700 mt-2">
+                Size (sqm)
+              </label>
+              <input
+                type="number"
+                name="size"
+                value={room.size}
+                onChange={(e) => handleRoomChange(index, e)}
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+              />
+
+              <label className="block text-sm font-medium text-gray-700 mt-2">
+                Bed Type
+              </label>
+              <input
+                type="text"
+                name="bedType"
+                value={room.bedType}
+                onChange={(e) => handleRoomChange(index, e)}
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+              />
+
+              <label className="block text-sm font-medium text-gray-700 mt-2">
+                Total Bed
+              </label>
+              <input
+                type="number"
+                name="totalBed"
+                value={room.totalBed}
+                onChange={(e) => handleRoomChange(index, e)}
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+              />
+
+              <label className="block text-sm font-medium text-gray-700 mt-2">
+                Quantity (qty)
+              </label>
+              <input
+                type="number"
+                name="qty"
+                value={room.qty}
+                onChange={(e) => handleRoomChange(index, e)}
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+              />
+
+              <label className="block text-sm font-medium text-gray-700 mt-2">
+                Base Price
+              </label>
+              <input
+                type="number"
+                name="basePrice"
+                value={room.basePrice}
+                onChange={(e) => handleRoomChange(index, e)}
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+              />
+
+              <label className="block text-sm font-medium text-gray-700 mt-2">
+                Total Bathroom
+              </label>
+              <input
+                type="number"
+                name="totalBathroom"
+                value={room.totalBathroom}
+                onChange={(e) => handleRoomChange(index, e)}
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+              />
+
+              {/* Remove Room Button */}
+              <button
+                type="button"
+                onClick={() => handleRemoveRoom(index)}
+                className="mt-2 text-red-500"
+              >
+                Remove Room
+              </button>
             </div>
           ))}
+          {/* Add Room Button */}
           <button
             type="button"
             onClick={handleAddRoom}
             className="mt-2 text-blue-500"
           >
-            Add Room
+            + Add Room
           </button>
         </div>
 
+        {/* Submit Button */}
         <button
           type="submit"
-          className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg"
+          className="px-4 py-2 bg-blue-500 text-white rounded-md"
         >
           Submit Property
         </button>

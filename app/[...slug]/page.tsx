@@ -11,7 +11,7 @@ export default function PropertyDetailPage() {
     return (
     <>
       <Header />
-      <div className="pt-28 lg:pt-16">
+      <div className="pt-24 lg:pt-16">
         <PropertyDetail/>
       </div>
       <Footer />

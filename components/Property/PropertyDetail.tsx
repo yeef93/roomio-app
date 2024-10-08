@@ -41,7 +41,7 @@ export default function PropertyDetail() {
   }
 
   return (
-    <div className="pt-28 lg:pt-2">
+    <div className="">
       <ImageCarousel images={property.images} />
       <div className="flex flex-row px-20 justify-between">
         <div>

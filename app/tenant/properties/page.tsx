@@ -69,6 +69,8 @@ function Properties() {
     }
   }, [id, userLoading, currentPage]); // Add currentPage to the dependency array
 
+  
+
   const handleCreate = () => {
     router.push("/tenant/properties/create-property");
   };
@@ -110,10 +112,8 @@ function Properties() {
       } catch (error) {
         // Handle deletion failure
         setShowDeleteConfirmation(false);
-        setError(error instanceof Error ? error.message : "Failed to delete");
         setNotificationMessage("Failed to delete property."); // Set failure message
         setShowNotificationModal(true); // Show notification modal
-        // Keep the confirmation modal open if delete failed, so user can retry or cancel
       }
     }
   };
@@ -211,18 +211,24 @@ function Properties() {
                   {property.category.name}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {property.isPublish ? "Published" : "Draft"}
+                  {property.isActive ? "Active" : "Inactive"}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                   <button
                     onClick={() =>
-                      property.isPublish
-                        ? router.push(`/tenant/properties/${property.id}`)
-                        : router.push(`/tenant/draft-properties/${property.id}`)
+                      router.push(`/${property.id}-${property.name.replace(/\s+/g, "-").toLowerCase()}`)
+                    }
+                    className="text-blue-500 hover:underline"
+                  >
+                    Detail
+                  </button>
+                  <button
+                    onClick={() =>
+                      router.push(`/tenant/properties/${property.id}`)
                     }
                     className="text-blue-500 hover:underline ml-4"
                   >
-                    Detail
+                    Edit
                   </button>
                   <button
                     onClick={() => handleDeleteClick(property.id)}
