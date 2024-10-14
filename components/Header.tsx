@@ -214,7 +214,7 @@ function Header() {
           <div className="flex md:order-2 space-x-3 md:space-x-0 relative">
             {status === "loading" ? (
               <span className="loader" />
-            ) : status === "authenticated" && userData ? (
+            ) : status === "authenticated" && isUser && userData ? (
               <div className="relative group flex items-center justify-center">
                 <div
                   className="flex flex-row justify-center items-center"
@@ -245,21 +245,6 @@ function Header() {
                       <UserIcon className="h-5 w-5 text-blue-500" />
                       <span>Profile</span>
                     </a>
-                    {/* <a
-                      href="#"
-                      className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                    >
-                      <ShoppingCartIcon className="h-5 w-5 text-blue-500" />
-                      <span>Purchase List</span>
-                    </a>
-
-                    <a
-                      href="#"
-                      className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                    >
-                      <TicketIcon className="h-5 w-5 text-blue-500" />
-                      <span>My Booking</span>
-                    </a> */}
                     <a
                       onClick={handleLogoutClick}
                       className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
