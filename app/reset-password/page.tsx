@@ -138,7 +138,7 @@ function ResetPassword() {
               onClick={resendForgotPassword}
               className="w-full bg-blue-500 text-white py-2 rounded"
             >
-              Resend Verification Email
+              Resend Reset Password Email
             </button>
           </div>
         )}

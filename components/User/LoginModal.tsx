@@ -43,6 +43,18 @@ function LoginModal({ onClose, onSuccess }:LoginModalProps) {
     }
   }, [session, router]);
 
+  const handleGoogleSignIn = async () => {
+    const result = await signIn('google', { redirect: false });
+
+    if (result?.error) {
+      console.error('Google sign-in error:', result.error);
+      // Handle error if needed
+    } else {
+      onClose();
+      onSuccess(); // Call success handler after sign-in
+    }
+  };
+
   const fetchCheckEmail = async (email: string) => {
     setIsCheckingEmail(true);
     try {
@@ -383,7 +395,7 @@ function LoginModal({ onClose, onSuccess }:LoginModalProps) {
             <button
               type="button"
               className="w-full py-2 flex items-center justify-center bg-white border border-blue-300 rounded-md text-blue-500 hover:bg-gray-100"
-              onClick={() => signIn("google")}
+              onClick={handleGoogleSignIn}
             >
               <Image
                 src="https://img.icons8.com/color/48/google-logo.png"

@@ -31,42 +31,94 @@ function Header() {
   const [isUser, setIsUser] = useState<boolean>(false);
 
   useEffect(() => {
-    if (session?.user?.token) {
-      const decodedToken = jwt.decode(session?.user?.token || "") as JwtPayload | null;
-      // Check if the token scope includes "user"
-      // console.log(decodedToken?.scope)
+    if (session?.user) {
+      saveUserToBackend(session.user);
+    }
+  }, [session]);
+
+  const saveUserToBackend = async (user: any) => {
+    try {
+      const response = await fetch(`${apiUrl}/auth/google-login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: user.name,
+          email: user.email,
+          provider: "google",
+          isTenant: false,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to save user");
+      }
+
+      const data = await response.json();
+      // Save token to local storage (or cookies for better security in production)
+      localStorage.setItem("authToken", data.data.token);
+
+      // Update user data state
+      setUserData({
+        ...user,
+        token: data.data.token, // include the token
+        role: data.data.role,
+      });
+
+      // // Display a welcome message
+      // alert(data.data.message);
+    } catch (error) {
+      console.error("Error saving user:", error);
+    }
+  };
+
+  useEffect(() => {
+    const token = localStorage.getItem("authToken") || session?.user.token;
+    if (!token) {
+      console.error("No token found");
+      return;
+    }
+
+    try {
+      const decodedToken = jwt.decode(token) as JwtPayload | null;
       if (decodedToken?.scope?.includes("ROLE_USER")) {
         setIsUser(true);
+      } else {
+        console.error("User does not have the required role");
       }
+    } catch (error) {
+      console.error("Error decoding token:", error);
     }
   }, [session]);
 
   useEffect(() => {
     if (session && isUser) {
-      const fetchUserData = async () => {
-        try {
-          const response = await fetch(`${apiUrl}/users/me`, {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${session.user.token}`,
-            },
-            credentials: "include",
-          });
-
-          if (response.ok) {
-            const json = await response.json();
-            setUserData(json.data); // Store user data
-          } else {
-            console.error("Failed to fetch user data");
-          }
-        } catch (error) {
-          console.error("Error fetching user data:", error);
-        }
-      };
-
       fetchUserData();
     }
   }, [session, isUser]);
+
+  const fetchUserData = async () => {
+    const token = localStorage.getItem("authToken");
+
+    try {
+      const response = await fetch(`${apiUrl}/users/me`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const json = await response.json();
+        setUserData(json.data);
+      } else {
+        console.error("Failed to fetch user data");
+      }
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+    }
+  };
 
   const handleClickButton = () => {
     setShowing((prev) => !prev);
@@ -96,11 +148,18 @@ function Header() {
 
   const handleLogoutConfirm = async () => {
     setIsLogoutModalOpen(false);
+
+    const token = localStorage.getItem("authToken") || session?.user.token;
+    if (!token) {
+      console.error("No token found for logout");
+      return;
+    }
+
     try {
       const response = await fetch(`${apiUrl}/auth/logout`, {
         method: "GET",
         headers: {
-          Authorization: `Bearer ${session?.user.token}`,
+          Authorization: `Bearer ${token}`, // Use localStorage or session token
         },
         credentials: "include",
       });
@@ -169,7 +228,7 @@ function Header() {
                     className="rounded-full border-2 w-8 h-8 cursor-pointer"
                   />
                   <span className="ml-2 text-gray-900">
-                    {userData.firstname || userData.email}
+                    {userData.firstname || userData.name || userData.email}
                   </span>
                   <ChevronDownIcon className="ml-1 h-5 w-5 text-gray-500" />
                 </div>
@@ -186,7 +245,7 @@ function Header() {
                       <UserIcon className="h-5 w-5 text-blue-500" />
                       <span>Profile</span>
                     </a>
-                    <a
+                    {/* <a
                       href="#"
                       className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                     >
@@ -200,7 +259,7 @@ function Header() {
                     >
                       <TicketIcon className="h-5 w-5 text-blue-500" />
                       <span>My Booking</span>
-                    </a>
+                    </a> */}
                     <a
                       onClick={handleLogoutClick}
                       className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"

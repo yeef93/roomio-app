@@ -42,16 +42,16 @@ function Sidebar() {
       label: "Profile",
       icon: UserIcon,
     },
-    {
-      href: `/user/purchase`,
-      label: "Purchase List",
-      icon: ShoppingCartIcon,
-    },
-    {
-      href: `/user/booking`,
-      label: "My Booking",
-      icon: TicketIcon,
-    },
+    // {
+    //   href: `/user/purchase`,
+    //   label: "Purchase List",
+    //   icon: ShoppingCartIcon,
+    // },
+    // {
+    //   href: `/user/booking`,
+    //   label: "My Booking",
+    //   icon: TicketIcon,
+    // },
   ];
 
   return (

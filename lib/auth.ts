@@ -83,6 +83,16 @@ export const authOptions: NextAuthOptions = {
       session.user.sub = token.sub as string;
       return session;
     },
+    async signIn({ user, account, profile, email, credentials }) {
+      // Add custom sign-in logic here if needed
+      return true;
+    },
+    async redirect({ url, baseUrl }) {
+      // Customize redirect behavior
+      if (url.startsWith(baseUrl)) return url;
+      else if (url.startsWith("/")) return new URL(url, baseUrl).toString();
+      return baseUrl;
+    },
   },
   secret: ensureString(process.env.NEXTAUTH_SECRET),
 };

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { FaTv, FaCoffee, FaBed } from "react-icons/fa";
+import { FaTv, FaCoffee, FaBed, FaWifi, FaHotel, FaToilet, FaRestroom, FaBath } from "react-icons/fa";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
+import { FaHouse, FaPeopleGroup } from "react-icons/fa6";
 
 interface RoomImage {
   id: number;
@@ -58,16 +59,13 @@ const RoomCard: React.FC<{ room: Room }> = ({ room }) => {
       <div className="p-4 flex justify-between">
         <div className="flex flex-col justify-between w-3/4">
           <div className="pb-4 border-b-2">
-            <h3 className="text-lg font-semibold text-gray-800 flex items-center">
+            <h3 className="text-lg font-semibold text-gray-800 flex items-center pb-4">
               {room.name}
             </h3>
-            <p className="text-gray-600 mb-4">Room size: {room.size} sqft</p>
-
-            <div className="flex items-center space-x-4 text-gray-600">
-              <FaTv />
-              <FaCoffee />
-              <p className="text-red-600">+3 more</p>
-            </div>
+            <div className=" flex space-x-4"><FaHouse/><p className="text-gray-600 mb-2">{room.size} sqft</p></div>
+            <div className=" flex space-x-4"><FaPeopleGroup/><p className="text-gray-600 mb-2">{room.capacity} People</p></div>
+            <div className=" flex space-x-4"><FaBed/><p className="text-gray-600 mb-2">{room.totalBed} {room.bedType}</p></div>
+            <div className=" flex space-x-4"><FaRestroom/><p className="text-gray-600 mb-2">{room.totalBathroom} Bathroom</p></div>
           </div>
 
           <div className="mt-4">
@@ -80,7 +78,6 @@ const RoomCard: React.FC<{ room: Room }> = ({ room }) => {
               </p>
             )}
             <p className="text-gray-500 text-sm">
-              {/* + Rp98.923 taxes & fee */}
             </p>
           </div>
         </div>

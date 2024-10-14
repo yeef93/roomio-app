@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import NotificationModal from "@/components/NotificationModal";
 
 function VerifyPage() {
   const router = useRouter();
@@ -12,6 +13,8 @@ function VerifyPage() {
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+  const [notificationMessage, setNotificationMessage] = useState<string | null>(null);
+  const [showNotification, setShowNotification] = useState(false);
 
   useEffect(() => {
     const verifyToken = async () => {
@@ -63,8 +66,14 @@ function VerifyPage() {
 
       const data = await response.json();
       if (response.ok && data.success) {
-        alert("Email successfully verified. User able to login.");
-        router.push("/"); // Redirect to home
+        // alert("Email successfully verified. User able to login.");
+        setNotificationMessage(
+          "Email successfully verified. You can now login."
+        );
+        setShowNotification(true);
+        setTimeout(() => {
+          router.push("/"); // Redirect to home after 3 seconds
+        }, 3000); // 3000 milliseconds = 3 seconds
       } else {
         console.error(
           "Failed to verify email user:",
@@ -104,7 +113,7 @@ function VerifyPage() {
       <div className="w-full max-w-md p-6 bg-white shadow-lg rounded-lg">
         <div className="flex justify-center mb-6">
           <img
-            src="/assets/logo.png" 
+            src="/assets/logo.png"
             alt="Roomio Logo"
             className="h-12" // Adjust the height as needed
           />
@@ -164,6 +173,15 @@ function VerifyPage() {
           </form>
         )}
       </div>
+      {showNotification && (
+        <NotificationModal
+          message={notificationMessage!}
+          onClose={() => {
+            setShowNotification(false);
+            setNotificationMessage(null); // Clear message on close
+          }}
+        />
+      )}
     </div>
   );
 }
