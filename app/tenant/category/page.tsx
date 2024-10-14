@@ -212,6 +212,7 @@ function CategoryPage() {
 
                 if (!response.ok) {
                   throw new Error("Failed to save category");
+                  
                 }
 
                 const updatedCategory = await response.json();
@@ -232,6 +233,10 @@ function CategoryPage() {
                 setShowNotificationModal(true); // Show notification modal
               }
             } catch (err) {
+              setNotificationMessage(
+                `Failed to ${category.id ? "update" : "create"} category. Please try again.`
+              ); // Set the error message
+              setShowNotificationModal(true);
               setError("Failed to save category");
             }
           }}
