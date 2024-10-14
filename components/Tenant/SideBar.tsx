@@ -45,24 +45,9 @@ function Sidebar() {
       icon: UserIcon,
     },
     {
-      href: `/tenant/dashboard`,
-      label: "Dashboard",
-      icon: PresentationChartBarIcon,
-    },
-    {
       href: `/tenant/properties`,
       label: "Properties",
       icon: HomeModernIcon,
-    },
-    {
-      href: `/tenant/review`,
-      label: "Review",
-      icon: StarIcon,
-    },
-    {
-      href: `/tenant/sales`,
-      label: "Sales",
-      icon: ChartBarIcon,
     },
     {
       href: `/tenant/category`,

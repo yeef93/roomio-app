@@ -177,13 +177,13 @@ function Header() {
                       <UserIcon className="h-5 w-5 text-blue-500" />
                       <span>Profile</span>
                     </a>
-                    <a
+                    {/* <a
                       href="/tenant/dashboard"
                       className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                     >
                       <PresentationChartBarIcon className="h-5 w-5 text-blue-500" />
                       <span>Dashboard</span>
-                    </a>
+                    </a> */}
                     <a
                       href="/tenant/properties"
                       className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
@@ -191,20 +191,20 @@ function Header() {
                       <HomeModernIcon className="h-5 w-5 text-blue-500" />
                       <span>Properties</span>
                     </a>
-                    <a
+                    {/* <a
                       href="/tenant/review"
                       className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                     >
                       <StarIcon className="h-5 w-5 text-blue-500" />
                       <span>Review</span>
-                    </a>
-                    <a
+                    </a> */}
+                    {/* <a
                       href="/tenant/sales"
                       className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                     >
                       <ChartBarIcon className="h-5 w-5 text-blue-500" />
                       <span>Sales</span>
-                    </a>
+                    </a> */}
                     <a
                       href="/tenant/category"
                       className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
