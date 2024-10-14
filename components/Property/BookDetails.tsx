@@ -2,29 +2,36 @@
 
 import { useState, useEffect } from 'react'
 
-export default function BookingForm() {
+interface BookingDetailsProps {
+  checkin: string | null;
+  checkout: string | null;
+  room: string | null;
+  adult: string | null;
+}
+
+export default function BookingForm({ checkin, checkout, room, adult }: BookingDetailsProps) {
   const today = new Date().toISOString().split('T')[0]
   const tomorrow = new Date(new Date().setDate(new Date().getDate() + 1)).toISOString().split('T')[0]
 
-  const [checkin, setCheckin] = useState(today)
-  const [checkout, setCheckout] = useState(tomorrow)
-  const [room, setRoom] = useState(1)
-  const [adult, setAdult] = useState(1)
+  const [checkinState, setCheckin] = useState(checkin || today)
+  const [checkoutState, setCheckout] = useState(checkout || tomorrow)
+  const [roomState, setRoom] = useState(room ? parseInt(room) : 1)
+  const [adultState, setAdult] = useState(adult ? parseInt(adult) : 1)
 
   useEffect(() => {
-    const checkoutDate = new Date(checkout)
-    const checkinDate = new Date(checkin)
+    const checkoutDate = new Date(checkoutState)
+    const checkinDate = new Date(checkinState)
     if (checkoutDate <= checkinDate) {
       const newCheckoutDate = new Date(checkinDate)
       newCheckoutDate.setDate(newCheckoutDate.getDate() + 1)
       setCheckout(newCheckoutDate.toISOString().split('T')[0])
     }
-  }, [checkin, checkout])
+  }, [checkinState, checkoutState])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     // Handle form submission here
-    console.log({ checkin, checkout, room, adult })
+    console.log({ checkin: checkinState, checkout: checkoutState, room: roomState, adult: adultState })
   }
 
   return (
@@ -39,7 +46,7 @@ export default function BookingForm() {
             <input
               id="checkin"
               type="date"
-              value={checkin}
+              value={checkinState}
               onChange={(e) => setCheckin(e.target.value)}
               min={today}
               required
@@ -51,9 +58,9 @@ export default function BookingForm() {
             <input
               id="checkout"
               type="date"
-              value={checkout}
+              value={checkoutState}
               onChange={(e) => setCheckout(e.target.value)}
-              min={new Date(checkin).toISOString().split('T')[0]}
+              min={new Date(checkinState).toISOString().split('T')[0]}
               required
               className=" px-1 mt-1 block w-full rounded-md border-gray-400 border-2 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
             />
@@ -63,7 +70,7 @@ export default function BookingForm() {
             <input
               id="room"
               type="number"
-              value={room}
+              value={roomState}
               onChange={(e) => setRoom(Math.max(1, parseInt(e.target.value)))}
               min={1}
               required
@@ -75,7 +82,7 @@ export default function BookingForm() {
             <input
               id="adult"
               type="number"
-              value={adult}
+              value={adultState}
               onChange={(e) => setAdult(Math.max(1, parseInt(e.target.value)))}
               min={1}
               required
