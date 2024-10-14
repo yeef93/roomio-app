@@ -43,15 +43,15 @@ function VerifyPage() {
     e.preventDefault();
 
     try {
-      const response = await fetch(`${apiUrl}/auth/verify-email`, {
+      const response = await fetch(`${apiUrl}/auth/change-email`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
           token,
-          oldEmail,
-          password,
+        currentEmail: oldEmail,  
+        currentPassword: password, 
         }),
       });
 
