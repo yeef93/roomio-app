@@ -242,7 +242,7 @@ const DetailProfile: React.FC = () => {
           </label>
           {user.avatar?.imageUrl && (
             <Image
-              src={user.avatar.imageUrl}
+              src={user.avatar?.imageUrl || "/assets/avatar.png"}
               alt="Profile avatar"
               className="w-20 h-20 rounded-full mb-2"
               width={200}

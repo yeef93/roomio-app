@@ -76,7 +76,7 @@ function Sidebar() {
       <div className="flex items-center justify-center">
         <Image
           className=" h-14 w-14 rounded-full border"
-          src={userData?.avatar.imageUrl || "/assets/avatar.png"}
+          src={userData?.avatar?.imageUrl || "/assets/avatar.png"}
           alt={userData?.firstname || "User Avatar"}
           width={96}
           height={96}
