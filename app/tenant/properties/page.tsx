@@ -222,7 +222,7 @@ function Properties() {
                   >
                     Detail
                   </button>
-                  <button
+                  {/* <button
                     onClick={() =>
                       router.push(`/tenant/properties/${property.id}`)
                     }
@@ -235,7 +235,7 @@ function Properties() {
                     className="text-red-500 hover:underline ml-4"
                   >
                     Delete
-                  </button>
+                  </button> */}
                 </td>
               </tr>
             ))
