@@ -11,7 +11,7 @@ export function useProperties() {
   useEffect(() => {
     async function fetchProperties() {
       try {
-        const response = await fetch(`${apiUrl}/property?sortBy=id&direction=asc&size=8`);
+        const response = await fetch(`${apiUrl}/property?sortBy=id&direction=asc&size=6`);
         const data = await response.json();
 
         if (!response.ok) {

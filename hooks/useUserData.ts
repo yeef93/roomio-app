@@ -9,6 +9,7 @@ interface Avatar {
 }
 
 export interface UserData {
+  success: any;
   id: number;
   firstname: string;
   lastname: string;

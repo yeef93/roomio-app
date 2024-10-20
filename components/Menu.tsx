@@ -13,9 +13,9 @@ function Menu() {
   ) as JwtPayload | null;
 
   const menuItems = [
+    { name: "Home", path: "/" },
+    { name: "Properties", path: "/properties" },
     { name: "Help Center", path: "/help-center" },
-    { name: "Terms & Conditions", path: "/terms" },
-    { name: "List your property", path: "/become-partner" },
   ];
 
   return (

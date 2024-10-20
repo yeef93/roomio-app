@@ -29,7 +29,7 @@ interface RoomDetailsProps {
   rooms: Room[];
 }
 
-const RoomDetails: React.FC<RoomDetailsProps> = ({ rooms }) => {
+function RoomDetails ({ rooms }:RoomDetailsProps)  {
   return (
     <div className="grid grid-cols-1 gap-6">
       {rooms.map((room) => (
@@ -54,6 +54,13 @@ const RoomCard: React.FC<{ room: Room }> = ({ room }) => {
     );
   };
 
+  const formatPrice = (price:number) => {
+    let formattedPrice = price.toFixed(2).replace('.', ',');
+    formattedPrice = formattedPrice.replace(/\B(?=(\d{3})+(?!\d))/g, ".");  
+    return 'Rp ' + formattedPrice;
+  };
+
+
   return (
     <div className="border rounded-lg shadow-md overflow-hidden relative bg-white p-4">     
       <div className="p-4 flex justify-between">
@@ -70,11 +77,11 @@ const RoomCard: React.FC<{ room: Room }> = ({ room }) => {
 
           <div className="mt-4">
             <p className="text-red-600 text-2xl font-bold">
-              Rp{room.actualPrice.toFixed(3)}
+            {formatPrice(room.actualPrice)}
             </p>
             {room.currentPrice && (
               <p className="text-gray-500 line-through">
-                Rp {room.currentPrice.toFixed(3)}
+                {formatPrice(room.currentPrice)}
               </p>
             )}
             <p className="text-gray-500 text-sm">

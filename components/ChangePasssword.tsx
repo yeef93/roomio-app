@@ -31,7 +31,6 @@ const ChangePassword = () => {
       setErrorMessage("");
       try {
         if (session) {
-          console.log(apiUrl);
           const response = await fetch(`${apiUrl}/users/me/change-password`, {
             method: "PUT",
             headers: {

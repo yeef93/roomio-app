@@ -54,9 +54,16 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
   // Create a URL-friendly property name
   const formattedName = name.replace(/\s+/g, "-").toLowerCase();
 
+  const formatPrice = (price:number) => {
+    let formattedPrice = price.toFixed(2).replace('.', ',');
+    formattedPrice = formattedPrice.replace(/\B(?=(\d{3})+(?!\d))/g, ".");  
+    return 'Rp ' + formattedPrice;
+  };
+    
+
   return (
     <div
-      className="property-card border rounded-lg shadow-md bg-white relative"
+      className="w-full max-w-sm border border-gray-200 rounded-lg border rounded-lg shadow-md bg-white relative"
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
@@ -133,10 +140,10 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
         <BuildingOfficeIcon className="h-5 w-5 mr-1 text-indigo-600" />
         {category.name}</p>
         <div className=" flex">
-          <p className="text-lg font-bold text-gray-600">Start From &nbsp;</p>
+          <p className="text-lg text-gray-600">Start From &nbsp;</p>
           <p className="text-lg font-bold text-red-500">
-            {" "}
-            Rp.{price.toFixed(0)}
+          {" "}
+          {formatPrice(price)}
           </p>
         </div>
       </Link>

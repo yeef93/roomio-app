@@ -1,66 +1,61 @@
-"use client";
-import React, { useState, useEffect } from "react";
-import useUserData, { UserData } from "@/hooks/useUserData";
-import { signOut, useSession } from "next-auth/react";
-import Image from "next/image";
-import ChangeEmailForm from "./ChangeEmailForm";
-import SuccessModal from "./SuccessModal";
+'use client'
 
-// Utility function for formatting date
+import React, { useState, useEffect } from "react"
+import useUserData, { UserData } from "@/hooks/useUserData"
+import { signOut, useSession } from "next-auth/react"
+import Image from "next/image"
+import ChangeEmailForm from "./ChangeEmailForm"
+import SuccessModal from "./SuccessModal"
+
 const formatDate = (dateString: string | null) => {
-  if (!dateString) return "";
-  const date = new Date(dateString);
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
-};
+  if (!dateString) return ""
+  const date = new Date(dateString)
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, "0")
+  const day = String(date.getDate()).padStart(2, "0")
+  return `${year}-${month}-${day}`
+}
 
-const DetailProfile: React.FC = () => {
-  const { userData: initialUserData, loading, updateUserData } = useUserData();
-  const [user, setUser] = useState<UserData | null>(null);
-  const [avatarFile, setAvatarFile] = useState<File | null>(null);
-  const { data: session } = useSession();
-  const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false); // Modal state
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
+export default function DetailProfile() {
+  const { userData: initialUserData, loading, updateUserData } = useUserData()
+  const [user, setUser] = useState<UserData | null>(null)
+  const [avatarFile, setAvatarFile] = useState<File | null>(null)
+  const { data: session } = useSession()
+  const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [showSuccessModal, setShowSuccessModal] = useState(false)
 
   useEffect(() => {
     if (initialUserData) {
       setUser({
         ...initialUserData,
         birthdate: formatDate(initialUserData.birthdate || ""),
-      });
+      })
     }
-  }, [initialUserData]);
+  }, [initialUserData])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setUser((prevUser) => (prevUser ? { ...prevUser, [name]: value } : null));
-  };
+    const { name, value } = e.target
+    setUser((prevUser) => (prevUser ? { ...prevUser, [name]: value } : null))
+  }
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+    const file = e.target.files?.[0]
     if (file) {
-      const allowedTypes = [
-        "image/jpeg",
-        "image/jpg",
-        "image/png",
-        "image/gif",
-      ];
-      const maxSize = 1 * 1024 * 1024; // 1MB
+      const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "image/gif"]
+      const maxSize = 1 * 1024 * 1024 // 1MB
 
       if (!allowedTypes.includes(file.type)) {
-        alert("Only JPG, JPEG, PNG, and GIF files are allowed.");
-        e.target.value = ""; // Reset file input
-        setAvatarFile(null);
+        alert("Only JPG, JPEG, PNG, and GIF files are allowed.")
+        e.target.value = "" // Reset file input
+        setAvatarFile(null)
       } else if (file.size > maxSize) {
-        alert("Image size must be less than 1MB.");
-        e.target.value = ""; // Reset file input
-        setAvatarFile(null);
+        alert("Image size must be less than 1MB.")
+        e.target.value = "" // Reset file input
+        setAvatarFile(null)
       } else {
-        setAvatarFile(file);
+        setAvatarFile(file)
         if (user) {
           setUser({
             ...user,
@@ -68,24 +63,24 @@ const DetailProfile: React.FC = () => {
               ...user.avatar,
               imageUrl: URL.createObjectURL(file),
             },
-          });
+          })
         }
       }
     }
-  };
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!user || isSubmitting) return;
+    e.preventDefault()
+    if (!user || isSubmitting) return
 
     try {
-      setIsSubmitting(true);
-      let avatarId = user.avatar.id;
+      setIsSubmitting(true)
+      let avatarId = user.avatar?.id
 
       if (avatarFile) {
-        const formData = new FormData();
-        formData.append("fileName", avatarFile.name);
-        formData.append("file", avatarFile);
+        const formData = new FormData()
+        formData.append("fileName", avatarFile.name)
+        formData.append("file", avatarFile)
 
         const uploadResponse = await fetch(`${apiUrl}/users/me/image/upload`, {
           method: "POST",
@@ -93,13 +88,13 @@ const DetailProfile: React.FC = () => {
             Authorization: `Bearer ${session?.user.token}`,
           },
           body: formData,
-        });
-        const uploadData = await uploadResponse.json();
+        })
+        const uploadData = await uploadResponse.json()
 
         if (uploadData.success) {
-          avatarId = uploadData.data.id.toString();
+          avatarId = uploadData.data.id.toString()
         } else {
-          throw new Error("Failed to upload avatar");
+          throw new Error("Failed to upload avatar")
         }
       }
 
@@ -109,33 +104,30 @@ const DetailProfile: React.FC = () => {
         phonenumber: user.phonenumber,
         birthdate: user.birthdate,
         avatarId,
-      };
+      }
 
-      await updateUserData(updatedUser);
-      // alert("Profile updated successfully!");
-      setShowSuccessModal(true);
+      const updatedUserData = await updateUserData(updatedUser)
+      setUser((prevUser) => ({ ...prevUser, ...updatedUserData } as UserData))
+      setShowSuccessModal(true)
       setTimeout(async () => {}, 2000);
       window.location.reload();
     } catch (error) {
-      console.error("Error updating profile:", error);
-      alert("Failed to update profile. Please try again.");
+      console.error("Error updating profile:", error)
+      alert("Failed to update profile. Please try again.")
     } finally {
-      setIsSubmitting(false);
+      setIsSubmitting(false)
     }
-  };
+  }
 
   const handleOpenModal = () => {
-    setIsModalOpen(true);
-  };
+    setIsModalOpen(true)
+  }
 
   const handleCloseModal = () => {
-    setIsModalOpen(false);
-  };
+    setIsModalOpen(false)
+  }
 
-  const handleChangeEmail = async (
-    currentPassword: string,
-    newEmail: string
-  ) => {
+  const handleChangeEmail = async (currentPassword: string, newEmail: string) => {
     try {
       const response = await fetch(`${apiUrl}/users/me/change-email`, {
         method: "POST",
@@ -147,39 +139,40 @@ const DetailProfile: React.FC = () => {
           currentPassword,
           newEmail,
         }),
-      });
-      const data = await response.json();
+      })
+      const data = await response.json()
       if (data.success) {
         alert(
           "Request Change Email successfully, please check your new email to continue change email!"
-        );
-        setIsModalOpen(false);
-        // Delay logout by 2 seconds to display the success message
+        )
+        setIsModalOpen(false)
         setTimeout(async () => {
-          await signOut({ callbackUrl: "/" });
-        }, 2000);
+          await signOut({ callbackUrl: "/" })
+        }, 2000)
       } else {
-        alert(data.statusMessage);
+        alert(data.statusMessage)
       }
     } catch (error) {
-      console.error("Error changing email:", error);
-      alert("Failed to change email. Please try again.");
+      console.error("Error changing email:", error)
+      alert("Failed to change email. Please try again.")
     }
-  };
+  }
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { value } = e.target;
-    const numericValue = value.replace(/\D/g, '');
-    setUser((prevUser) => (prevUser ? { ...prevUser, phonenumber: numericValue } : null));
-  };
+    const { value } = e.target
+    const numericValue = value.replace(/\D/g, "")
+    setUser((prevUser) =>
+      prevUser ? { ...prevUser, phonenumber: numericValue } : null
+    )
+  }
 
-  if (loading) return <p>Loading...</p>;
-  if (!user) return <p>No user data available.</p>;
+  if (loading) return <p>Loading...</p>
+  if (!user) return <p>No user data available.</p>
 
   return (
     <>
-      <div className=" border-b-2">
-        <h1 className=" text-xl">Public Profile</h1>
+      <div className="border-b-2">
+        <h1 className="text-xl">Public Profile</h1>
       </div>
       <form onSubmit={handleSubmit} className="p-4 max-w-md mx-auto pb-10">
         <div className="mb-4">
@@ -269,10 +262,10 @@ const DetailProfile: React.FC = () => {
         </button>
       </form>
 
-      <div className=" border-b-2">
-        <h1 className=" text-xl">Account</h1>
+      <div className="border-b-2">
+        <h1 className="text-xl">Account</h1>
       </div>
-      <div className=" p-4 max-w-md mx-auto">
+      <div className="p-4 max-w-md mx-auto">
         <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700">
             Email
@@ -286,28 +279,23 @@ const DetailProfile: React.FC = () => {
               required
               disabled
             />
-            {/* Conditionally render the "Change Email" button */}
-            {user.method === "email" ? (
+            {user.method === "email" && (
               <button
                 onClick={handleOpenModal}
                 className="text-blue-600 hover:underline"
               >
                 Change Email
               </button>
-            ) : (
-              <p className="text-red-500 mt-4"></p>
             )}
           </div>
         </div>
-        {/* Pass modal control to ChangeEmailForm */}
         {isModalOpen && (
           <ChangeEmailForm
             onSubmit={handleChangeEmail}
-            onClose={handleCloseModal} // Pass the close modal function
+            onClose={handleCloseModal}
           />
         )}
 
-        {/* Render Success Modal */}
         {showSuccessModal && (
           <SuccessModal
             message="Profile updated successfully!"
@@ -316,7 +304,5 @@ const DetailProfile: React.FC = () => {
         )}
       </div>
     </>
-  );
-};
-
-export default DetailProfile;
+  )
+}

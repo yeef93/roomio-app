@@ -5,7 +5,7 @@ import React from "react";
 import faqdata from "@/utils/faq";
 import Accordion from "@/components/Accordion";
 
-const HelpCenter: React.FC = () => {
+function HelpCenter () {
   return (
     <>
       <Header />
